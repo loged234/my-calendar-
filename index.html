@@ -1,947 +1,629 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Work Calendar</title>
-<style>
-  :root{
-    --bg:#f5f3ef;
-    --card:#ffffff;
-    --line:#e7e3db;
-    --ink:#23272c;
-    --muted:#8b9099;
-    --red-1:#e8564a;
-    --red-2:#cd382c;
-    --blue-1:#40b3e2;
-    --blue-2:#1d8dc3;
-    --work-1:#e3f896;
-    --work-2:#c6e956;
-    --note:#f0a53a;
-    --brand:#2f6f6b;
-    --purple:#8b5cf6;
-    --purple-dark:#6d28d9;
-    --today-black:#1a1a1a; /* Thick black highlight */
-    --month-h:42px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Calendar &amp; Task Dashboard (2026–2028)</title>
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --lemon-bg: #d9f99d;
+      --lemon-border: #84cc16;
+      --lemon-text: #365314;
+      --rest-bg: #fee2e2;
+      --rest-border: #ef4444;
+      --rest-text: #991b1b;
+    }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
+    * { box-sizing: border-box; }
 
-  body{
-    margin:0;
-    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    display:flex;
-    flex-direction:column;
-    height:100dvh;
-    overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-  }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.4;
+    }
 
-  /* ---------------- Top bar ---------------- */
-  .topbar{
-    display:flex;
-    align-items:center;
-    gap:18px;
-    flex-wrap:wrap;
-    padding:13px 22px;
-    background:rgba(255,255,255,.88);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--line);
-    z-index:20;
-    flex:0 0 auto;
-  }
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
 
-  .brand{
-    font-size:15.5px;
-    font-weight:680;
-    letter-spacing:-.01em;
-    line-height:1.15;
-  }
-  .brand small{
-    display:block;
-    font-size:11px;
-    font-weight:500;
-    letter-spacing:.05em;
-    color:var(--muted);
-    margin-top:2px;
-    text-transform:uppercase;
-  }
+    .topbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-  .hint{
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:.02em;
-    color:#a4a9b1;
-    white-space:nowrap;
-  }
-  .hint b{color:#7c828b;font-weight:700}
+    .brand { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
 
-  .legend{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-left:auto;
-    font-size:11.5px;
-    font-weight:600;
-    letter-spacing:.04em;
-    color:#767c85;
-    text-transform:uppercase;
-  }
-  .legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-  .legend i{display:inline-block;width:13px;height:13px;border-radius:4px}
-  .legend .w{background:linear-gradient(160deg,var(--work-1),var(--work-2))}
-  .legend .r{background:linear-gradient(160deg,var(--red-1),var(--red-2))}
-  .legend .b{background:linear-gradient(160deg,var(--blue-1),var(--blue-2))}
-  .legend .k{background:transparent;border:2px solid var(--purple);border-radius:4px}
-  .legend .n{width:8px;height:8px;border-radius:50%;background:var(--note)}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 16px;
+      align-items: start;
+    }
 
-  .saved{
-    font-size:12px;
-    font-weight:650;
-    color:#2f8f5b;
-    opacity:0;
-    transform:translateY(-2px);
-    transition:opacity .3s, transform .3s;
-    white-space:nowrap;
-  }
-  .saved.show{opacity:1;transform:translateY(0)}
+    @media (min-width: 640px) {
+      .container { padding: 20px; gap: 20px; }
+    }
 
-  /* ---------------- Scroller ---------------- */
-  .scroller{
-    flex:1 1 auto;
-    overflow-y:auto;
-    overflow-x:hidden;
-    position:relative;
-    overscroll-behavior:contain;
-  }
+    @media (max-width: 1080px) {
+      .container { grid-template-columns: 1fr; }
+    }
 
-  /* ---------------- Notice banner ---------------- */
-  .notice{
-    max-width:1180px;
-    margin:14px auto 0;
-    display:flex;
-    gap:12px;
-    align-items:flex-start;
-    padding:12px 16px;
-    background:#fff;
-    border:1px solid #d9cdf2;
-    border-left:4px solid var(--purple);
-    border-radius:12px;
-    font-size:12.5px;
-    line-height:1.55;
-    color:#5a5460;
-    box-shadow:0 1px 0 rgba(20,20,20,.02);
-  }
-  .notice strong{color:#5b21b6;font-weight:750}
-  .notice b{color:#5b21b6;font-weight:700}
-  .notice .muted{display:block;margin-top:3px;color:#8b8794;font-size:11.5px}
-  .notice .dot-pink{
-    flex:0 0 auto;
-    width:11px;height:11px;border-radius:50%;
-    margin-top:4px;
-    background:var(--purple);
-    box-shadow:0 0 0 4px rgba(139,92,246,.15);
-  }
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
 
-  .calendar{
-    max-width:1180px;
-    margin:0 auto;
-    padding:10px 0 70px;
-  }
+    .toolbar {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-  .month{position:relative}
+    .toolbar-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
 
-  /* Frozen month title — BOLD CAPITALS */
-  .month-title{
-    position:sticky;
-    top:0;
-    z-index:6;
-    margin:0;
-    height:var(--month-h);
-    display:flex;
-    align-items:center;
-    padding:0 18px;
-    font-size:13px;
-    font-weight:800;
-    letter-spacing:.20em;
-    text-transform:uppercase;
-    color:#4c525a;
-    background:rgba(245,243,239,.94);
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
-  }
+    .btn, select, input[type="text"], input[type="date"], input[type="number"] {
+      font: inherit;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 9px;
+      background: #fff;
+      color: var(--text-main);
+    }
 
-  /* Frozen weekday row — BOLD CAPITALS, high contrast */
-  .weekdays{
-    position:sticky;
-    top:var(--month-h);
-    z-index:5;
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    gap:6px;
-    padding:6px 16px 8px;
-    background:rgba(245,243,239,.94);
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
-    font-size:11.5px;
-    font-weight:800;
-    letter-spacing:.15em;
-    text-transform:uppercase;
-    color:#3f444b;
-  }
-  .weekdays span{text-align:center}
-  .weekdays::after{
-    content:"";
-    position:absolute;
-    left:16px;right:16px;bottom:0;
-    height:1px;
-    background:var(--line);
-  }
+    .btn { cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: #0f172a; color: #fff; border-color: #0f172a; }
 
-  /* ---------------- Grid ---------------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    gap:6px;
-    padding:2px 16px 26px;
-    grid-auto-rows:minmax(66px,auto);
-  }
+    .legend {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
 
-  .cell{
-    position:relative;
-    border-radius:10px;
-    background:var(--card);
-    border:1px solid #eae6de;
-    padding:7px 9px;
-    font-size:13px;
-    color:#3a3f45;
-    cursor:pointer;
-    user-select:none;
-    -webkit-user-select:none;
-    -webkit-touch-callout:none;
-    touch-action:manipulation;
-    overflow:hidden;
-    box-shadow:0 1px 0 rgba(20,20,20,.02);
-    transition:background .16s ease, border-color .16s ease, color .16s ease,
-               box-shadow .16s ease, transform .07s ease;
-  }
-  .cell:hover{border-color:#d9d3c8;box-shadow:0 3px 10px rgba(30,25,15,.07)}
-  .cell:active{transform:scale(.982)}
+    .swatch {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-right: 4px;
+      border: 1px solid transparent;
+    }
 
-  .cell.out{
-    background:transparent;
-    border-color:transparent;
-    color:#d2cdc4;
-    cursor:default;
-    box-shadow:none;
-    pointer-events:none;
-  }
-  .cell.out.blank{visibility:hidden}
+    .table-wrap { width: 100%; overflow-x: hidden; }
 
-  .num{
-    font-variant-numeric:tabular-nums;
-    font-weight:600;
-    font-size:13px;
-    letter-spacing:.01em;
-  }
+    table.calendar-grid {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
 
-  .dot{
-    position:absolute;
-    top:9px;right:9px;
-    width:6px;height:6px;
-    border-radius:50%;
-    background:var(--note);
-    display:none;
-    box-shadow:0 0 0 3px rgba(240,165,58,.16);
-  }
-  .cell.has-note .dot{display:block}
+    table.calendar-grid thead th {
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 8px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+    }
 
-  .hd,
-  .rest-tag,
-  .bh{
-    position:absolute;
-    right:9px;bottom:6px;
-    font-size:9.5px;
-    font-weight:800;
-    letter-spacing:.12em;
-    opacity:.92;
-    display:none;
-  }
-  .cell.holiday .hd{display:block}
-  .cell.rest .rest-tag{display:block}
-  .cell.bank .bh{display:block; color:var(--purple-dark);}
+    table.calendar-grid thead th:last-child,
+    table.calendar-grid tbody td:last-child { border-right: none; }
 
-  /* Working day — lemon green (DEFAULT for every non-bank available day) */
-  .cell.work{
-    background:linear-gradient(160deg,var(--work-1),var(--work-2));
-    border-color:#aed73f;
-    color:#2c3a0e;
-  }
-  .cell.work .num{color:#2c3a0e}
-  .cell.work .dot{background:#6a7d1d;box-shadow:0 0 0 3px rgba(106,125,29,.18)}
-  .cell.work:hover{border-color:#9bc72f;box-shadow:0 4px 14px rgba(174,215,63,.32)}
+    .sticky-col {
+      width: 66px;
+      background: #f8fafc;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
 
-  /* Rest day — red (double click) */
-  .cell.rest{
-    background:linear-gradient(160deg,var(--red-1),var(--red-2));
-    border-color:#c5362a;
-    color:#fff;
-  }
-  .cell.rest .num{color:#fff}
-  .cell.rest .dot{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.22)}
-  .cell.rest:hover{border-color:#b52f24;box-shadow:0 4px 14px rgba(205,56,44,.30)}
-  .cell.rest .bh{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+    table.calendar-grid tbody td {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 3px;
+      vertical-align: top;
+      background: #fff;
+    }
 
-  /* Holiday — water blue (triple click) */
-  .cell.holiday{
-    background:linear-gradient(160deg,var(--blue-1),var(--blue-2));
-    border-color:#1b85b9;
-    color:#fff;
-  }
-  .cell.holiday .num{color:#fff}
-  .cell.holiday .dot{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.22)}
-  .cell.holiday:hover{border-color:#16749f;box-shadow:0 4px 14px rgba(29,141,195,.32)}
-  .cell.holiday .bh{color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+    .day-cell {
+      min-height: 76px;
+      border-radius: 6px;
+      border: 1px solid var(--lemon-border);
+      background: var(--lemon-bg);
+      color: var(--lemon-text);
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 3px;
+      cursor: pointer;
+      user-select: none;
+    }
 
-  /* Scottish bank holiday — BOLD PURPLE BORDER ONLY */
-  .cell.bank::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:10px;
-    border:4px solid var(--purple);
-    pointer-events:none;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.5), 0 0 6px rgba(139,92,246,.4);
-    z-index: 1;
-  }
+    @media (min-width: 640px) {
+      table.calendar-grid tbody td { padding: 6px; }
+      .day-cell { min-height: 108px; padding: 7px; border-radius: 8px; }
+    }
 
-  /* TODAY — THICK BLACK BORDER OUTSIDE THE CELL (matching photo) */
-  .cell.today{
-    z-index: 10;
-    outline: 3px solid var(--today-black);
-    outline-offset: 2px; /* Creates the gap seen in your photo */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Slight shadow for pop */
-  }
+    @media (max-width: 639px) {
+      .sticky-col { display: none; }
+    }
 
-  /* ---------------- Note popover ---------------- */
-  .note-pop{
-    position:fixed;
-    z-index:200;
-    width:272px;
-    max-width:calc(100vw - 20px);
-    background:#fff;
-    border:1px solid #e3ded4;
-    border-radius:14px;
-    box-shadow:0 18px 48px rgba(35,30,20,.18), 0 2px 8px rgba(0,0,0,.05);
-    padding:12px;
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-    animation:pop .14s ease-out;
-  }
-  .note-pop[hidden]{display:none}
+    .day-cell.rest {
+      background: var(--rest-bg);
+      border-color: var(--rest-border);
+      color: var(--rest-text);
+    }
 
-  @keyframes pop{
-    from{opacity:0;transform:translateY(-4px) scale(.985)}
-    to{opacity:1;transform:none}
-  }
+    .day-cell.out-month { opacity: 0.6; }
 
-  .note-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    font-size:10.5px;
-    font-weight:750;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--muted);
-  }
-  .note-head button{
-    border:0;background:transparent;
-    font-size:17px;line-height:1;
-    color:#b3b8bf;cursor:pointer;
-    padding:0 2px;border-radius:6px;
-    transition:color .15s,background .15s;
-  }
-  .note-head button:hover{color:#6b7280;background:#f4f2ee}
+    .day-cell.today-mark {
+      outline: 2px solid #0f172a;
+      outline-offset: -2px;
+    }
 
-  .note-pop textarea{
-    width:100%;
-    min-height:78px;
-    resize:vertical;
-    border-radius:9px;
-    border:1px solid #e6e1d8;
-    padding:8px 10px;
-    font:inherit;
-    font-size:13px;
-    line-height:1.45;
-    color:#2b3036;
-    background:#fcfbf9;
-    outline:none;
-    transition:border-color .15s, box-shadow .15s;
-  }
-  .note-pop textarea:focus{
-    border-color:#b9c9c7;
-    box-shadow:0 0 0 3px rgba(47,111,107,.10);
-    background:#fff;
-  }
+    .cell-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2px;
+    }
 
-  .note-actions{display:flex;gap:8px;justify-content:flex-end}
-  .btn{
-    border:0;
-    border-radius:8px;
-    padding:7px 13px;
-    font:inherit;
-    font-size:12.5px;
-    font-weight:650;
-    letter-spacing:.01em;
-    cursor:pointer;
-    transition:background .15s, transform .07s;
-  }
-  .btn:active{transform:scale(.97)}
-  .btn.primary{background:var(--brand);color:#fff}
-  .btn.primary:hover{background:#265b58}
-  .btn.ghost{background:transparent;color:#a4564c}
-  .btn.ghost:hover{background:#fdf1ef}
+    .date-btn {
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-weight: 700;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      padding: 1px 3px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
 
-  @media (max-width:820px){
-    .hint{display:none}
-  }
+    .today-tag {
+      background: #0f172a;
+      color: #fff;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 3px;
+      border-radius: 2px;
+    }
 
-  @media (max-width:640px){
-    .topbar{gap:12px;padding:11px 14px}
-    .legend{width:100%;margin-left:0;gap:12px;flex-wrap:wrap}
-    .notice{margin:10px 10px 0;padding:10px 12px;font-size:12px}
-    .grid,.weekdays{padding-left:10px;padding-right:10px}
-    .grid{gap:5px;grid-auto-rows:minmax(56px,auto)}
-    .weekdays{gap:5px;font-size:10.5px}
-    .num{font-size:12px}
-    .cell{padding:6px 7px;border-radius:9px}
-    .cell.bank::before{border-radius:9px;border-width:3px}
-    .cell.today{outline-width:2.5px;outline-offset:1.5px}
-  }
-</style>
+    .shift-label { font-size: 10px; font-weight: 600; }
+
+    .holiday-mark {
+      background: rgba(255, 255, 255, 0.88);
+      color: #0f172a;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      border-radius: 2px;
+      padding: 1px 3px;
+      font-size: 8px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .staff-pill {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.88);
+      color: #0f172a;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      padding: 2px;
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .inspector {
+      padding: 12px 14px;
+      background: #f1f5f9;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .section-pad { padding: 14px; }
+
+    .scanner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .scanner-grid { grid-template-columns: 1fr; }
+    }
+
+    .dropzone {
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .dropzone img { max-height: 120px; max-width: 100%; border-radius: 6px; }
+
+    .task-form {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-row-inputs {
+      display: grid;
+      grid-template-columns: 1fr 82px 1fr;
+      gap: 6px;
+    }
+
+    .task-list { max-height: 460px; overflow-y: auto; }
+    .task-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .task-item.done .task-title { text-decoration: line-through; color: #94a3b8; }
+    .task-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  </style>
 </head>
 <body>
-
-<header class="topbar">
-  <div class="brand">
-    Work Calendar
-    <small id="rangeLabel">—</small>
-  </div>
-
-  <div class="hint">
-    <b>1×</b> work · <b>2×</b> rest · <b>3×</b> holiday · <b>hold</b> note
-  </div>
-
-  <div class="legend">
-    <span><i class="w"></i>Working</span>
-    <span><i class="r"></i>Rest</span>
-    <span><i class="b"></i>Holiday (HD)</span>
-    <span><i class="k"></i>Bank Hol. (BH)</span>
-    <span><i class="n"></i>Note</span>
-  </div>
-
-  <span id="saved" class="saved">✓ Saved</span>
-</header>
-
-<main class="scroller" id="scroller">
-
-  <div class="notice" role="note">
-    <span class="dot-pink" aria-hidden="true"></span>
-    <div>
-      <strong>Scottish bank holidays</strong> are highlighted with a <b>bold purple border</b> and a <b>BH</b> tag.
-      Today's date is outlined with a <b>thick black border</b>.
-      <span class="muted">Dates: 25 &amp; 28 Dec 2026 · 1 &amp; 4 Jan, 26 Mar, 3 &amp; 31 May, 2 Aug, 30 Nov, 27 &amp; 28 Dec 2027.</span>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">RosterSync — Work Calendar &amp; Tasks</div>
+      <div class="toolbar-controls">
+        <button type="button" class="btn" id="exportDataBtn">Export JSON</button>
+        <button type="button" class="btn" id="importDataBtn">Import JSON</button>
+        <input type="file" id="importJsonInput" accept="application/json" hidden />
+      </div>
     </div>
-  </div>
+  </header>
 
-  <div class="calendar" id="calendar"></div>
-</main>
+  <main class="container">
+    <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+      <section class="card">
+        <div class="toolbar">
+          <div class="toolbar-controls">
+            <strong id="monthHeading" style="font-size:16px;">November 2026</strong>
+            <button type="button" class="btn" id="prevMonthBtn">&lsaquo;</button>
+            <select id="monthSelect"></select>
+            <select id="yearSelect"></select>
+            <button type="button" class="btn" id="todayBtn">Today</button>
+            <button type="button" class="btn" id="nextMonthBtn">&rsaquo;</button>
+          </div>
+          <div class="toolbar-controls">
+            <button type="button" class="btn" id="resetMonthBtn">Reset</button>
+            <button type="button" class="btn btn-primary" id="uploadPhotoTopBtn">Upload Photo</button>
+          </div>
+        </div>
 
-<!-- Note editor -->
-<div class="note-pop" id="notePop" hidden>
-  <div class="note-head">
-    <span id="noteDate">Note</span>
-    <button type="button" id="noteClose" title="Close">×</button>
-  </div>
-  <textarea id="noteText" placeholder="Write a note…" spellcheck="true"></textarea>
-  <div class="note-actions">
-    <button type="button" class="btn ghost" id="noteDelete">Delete</button>
-    <button type="button" class="btn primary" id="noteSave">Save</button>
-  </div>
-</div>
+        <div class="legend">
+          <span><span class="swatch" style="background:#d9f99d; border-color:#84cc16;"></span>2× tap: Lemon Green</span>
+          <span><span class="swatch" style="background:#fee2e2; border-color:#ef4444;"></span>1× tap: Red (Rest)</span>
+          <span><strong>★ TODAY</strong> = Current Date</span>
+          <span><strong>⚑</strong> = Scottish Holiday</span>
+        </div>
 
-<script>
-(function () {
-  'use strict';
+        <div class="table-wrap">
+          <table class="calendar-grid">
+            <thead>
+              <tr>
+                <th class="sticky-col">Shift</th>
+                <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+              </tr>
+            </thead>
+            <tbody id="calendarBody"></tbody>
+          </table>
+        </div>
 
-  /* =========================================================
-     CONFIG
-     ========================================================= */
-  const STORAGE_KEY = 'workCalendar.v1';
+        <div id="dayInspector" class="inspector" style="display:none;"></div>
+      </section>
 
-  /* Fixed range — always 27 Oct 2026 → 31 Dec 2027 */
-  const FIXED_START = '2026-10-27';
-  const END_DATE    = '2027-12-31';
+      <section class="card section-pad">
+        <strong style="font-size:14px;">Schedule Photo Upload &amp; Askal Matcher</strong>
+        <input type="file" id="photoInput" accept="image/*" hidden />
+        <div class="scanner-grid">
+          <div class="dropzone" id="photoDropzone">
+            <span style="font-size:13px; font-weight:600;">Tap or drop schedule photo</span>
+            <span style="font-size:11px; color:var(--text-muted);">JPG, PNG, WEBP</span>
+          </div>
+          <div style="border:1px solid var(--border); border-radius:10px; padding:12px; background:#f8fafc; display:flex; flex-direction:column; gap:8px;">
+            <input type="text" id="askalDatesInput" placeholder="Askal Rest Dates (e.g. 2026-11-18, 2026-11-22)" />
+            <div style="display:flex; gap:8px;">
+              <input type="number" id="defaultStaffInput" min="0" max="500" value="4" style="width:90px;" />
+              <button type="button" class="btn btn-primary" id="applyAskalBtn" style="flex:1;">Apply Askal Rest &amp; Staff</button>
+            </div>
+            <div id="scanStatus" style="font-size:11px; color:var(--text-muted);">Enter Askal's off dates from the photo to mark them Red (Rest).</div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-  const HOLD_MS  = 480;  // press & hold  -> note editor
-  const CLICK_MS = 300;  // window used to group clicks (1×, 2×, 3×)
+    <aside class="card">
+      <div class="toolbar">
+        <div>
+          <strong style="font-size:15px;">Task Dashboard</strong>
+          <div id="taskSummary" style="font-size:11px; color:var(--text-muted);">0 open · 0 completed</div>
+        </div>
+        <button type="button" class="btn" id="clearTaskDateFilterBtn" style="display:none;">All Dates</button>
+      </div>
+      <div class="task-form">
+        <input type="text" id="taskSearch" placeholder="Search tasks..." />
+        <form id="addTaskForm" style="display:flex; flex-direction:column; gap:8px;">
+          <input type="text" id="taskTitle" placeholder="New task title..." required />
+          <div class="task-row-inputs">
+            <input type="date" id="taskDate" min="2026-01-01" max="2028-12-31" />
+            <select id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+            <input type="text" id="taskAssignee" placeholder="Assignee" />
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+      </div>
+      <div class="task-list" id="taskList"></div>
+    </aside>
+  </main>
 
-  const MONTHS   = ['January','February','March','April','May','June',
-                    'July','August','September','October','November','December'];
-  const WD_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const WD_LONG  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  <script>
+    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const SCOTTISH_HOLIDAYS = {
+      '2026-01-01':"New Year's Day",'2026-01-02':'2nd January','2026-04-03':'Good Friday',
+      '2026-05-04':'Early May','2026-05-25':'Spring Bank','2026-08-03':'Summer Bank',
+      '2026-11-30':"St Andrew's Day",'2026-12-25':'Christmas Day','2026-12-28':'Boxing Day (Sub)',
+      '2027-01-01':"New Year's Day",'2027-01-04':'2nd Jan (Sub)','2027-03-26':'Good Friday',
+      '2027-05-03':'Early May','2027-05-31':'Spring Bank','2027-08-02':'Summer Bank',
+      '2027-11-30':"St Andrew's Day",'2027-12-27':'Christmas (Sub)','2027-12-28':'Boxing Day (Sub)',
+      '2028-01-03':"New Year (Sub)",'2028-01-04':'2nd Jan (Sub)','2028-04-14':'Good Friday',
+      '2028-05-01':'Early May','2028-05-29':'Spring Bank','2028-08-07':'Summer Bank',
+      '2028-11-30':"St Andrew's Day",'2028-12-25':'Christmas Day','2028-12-26':'Boxing Day'
+    };
 
-  /* Scottish bank holidays for Christmas & New Year within the range
-     (actual dates plus weekend substitutes). Updated to match 2027 list. */
-  const BANK_HOLIDAYS = new Set([
-    '2026-12-25', // Christmas Day
-    '2026-12-28', // Boxing Day Substitute
-    '2027-01-01', // New Year's Day
-    '2027-01-04', // 2nd January Substitute
-    '2027-03-26', // Good Friday
-    '2027-05-03', // Early May Bank Holiday
-    '2027-05-31', // Spring Bank Holiday
-    '2027-08-02', // Summer Bank Holiday
-    '2027-11-30', // St Andrew's Day
-    '2027-12-27', // Christmas Day Substitute
-    '2027-12-28'  // Boxing Day Substitute
-  ]);
+    const STORAGE_KEY = 'rostersync_standalone_v1';
+    let state = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { entries:{}, tasks:[] }; } catch { return { entries:{}, tasks:[] }; } })();
+    const now = new Date();
+    let currentYear = Math.min(2028, Math.max(2026, now.getFullYear()));
+    let currentMonth = now.getMonth() + 1;
+    let selectedDate = null;
+    const tapTimers = {}, lastTapTimes = {};
 
-  /* =========================================================
-     ELEMENTS
-     ========================================================= */
-  const calendarEl = document.getElementById('calendar');
-  const scrollerEl = document.getElementById('scroller');
-  const savedEl    = document.getElementById('saved');
-  const rangeLabel = document.getElementById('rangeLabel');
-  const notePop    = document.getElementById('notePop');
-  const noteDateEl = document.getElementById('noteDate');
-  const noteText   = document.getElementById('noteText');
+    const formatIso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const saveState = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const getEntry = iso => state.entries[iso] || { status:'work', staff:0, note:'' };
+    const setEntry = (iso, patch) => { state.entries[iso] = { ...getEntry(iso), ...patch }; saveState(); renderCalendar(); };
 
-  /* =========================================================
-     HELPERS
-     ========================================================= */
-  const pad2 = n => String(n).padStart(2, '0');
-  const ymd  = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+    function populateSelectors() {
+      document.getElementById('monthSelect').innerHTML = MONTH_NAMES.map((m,i)=>`<option value="${i+1}">${m.slice(0,3)}</option>`).join('');
+      document.getElementById('yearSelect').innerHTML = [2026,2027,2028].map(y=>`<option value="${y}">${y}</option>`).join('');
+    }
 
-  function parseYmd(s) {
-    const p = String(s).split('-').map(Number);
-    return new Date(p[0], p[1] - 1, p[2]);
-  }
+    function renderInspector() {
+      const el = document.getElementById('dayInspector');
+      if (!selectedDate) { el.style.display = 'none'; return; }
+      const entry = getEntry(selectedDate);
+      const hol = SCOTTISH_HOLIDAYS[selectedDate];
+      el.style.display = 'flex';
+      el.innerHTML = `
+        <div>
+          <strong style="font-size:12px;">${selectedDate}</strong>
+          ${hol ? `<span style="font-size:11px; color:#3730a3; margin-left:6px;">⚑ ${hol}</span>` : ''}
+        </div>
+        <div class="toolbar-controls">
+          <button type="button" class="btn" id="insWorkBtn" style="background:${entry.status==='work'?'#d9f99d':'#fff'};">Shift On</button>
+          <button type="button" class="btn" id="insRestBtn" style="background:${entry.status==='rest'?'#fee2e2':'#fff'};">Rest</button>
+          <button type="button" class="btn" id="insDecStaff">−</button>
+          <span style="font-size:12px; font-weight:600; min-width:52px; text-align:center;">${entry.staff} staff</span>
+          <button type="button" class="btn" id="insIncStaff">+</button>
+          <button type="button" class="btn" id="insClose">✕</button>
+        </div>`;
+      el.querySelector('#insWorkBtn').onclick = () => setEntry(selectedDate, { status:'work' });
+      el.querySelector('#insRestBtn').onclick = () => setEntry(selectedDate, { status:'rest' });
+      el.querySelector('#insDecStaff').onclick = () => setEntry(selectedDate, { staff: Math.max(0, entry.staff - 1) });
+      el.querySelector('#insIncStaff').onclick = () => setEntry(selectedDate, { staff: Math.min(500, entry.staff + 1) });
+      el.querySelector('#insClose').onclick = () => { selectedDate = null; renderCalendar(); renderTasks(); };
+    }
 
-  function prettyDate(key) {
-    const d = parseYmd(key);
-    return WD_LONG[d.getDay()] + ' · ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
-  }
+    function renderCalendar() {
+      document.getElementById('monthHeading').textContent = `${MONTH_NAMES[currentMonth-1]} ${currentYear}`;
+      document.getElementById('monthSelect').value = String(currentMonth);
+      document.getElementById('yearSelect').value = String(currentYear);
+      const todayIso = formatIso(new Date());
+      const first = new Date(currentYear, currentMonth-1, 1);
+      const start = new Date(currentYear, currentMonth-1, 1 - first.getDay());
+      const tbody = document.getElementById('calendarBody');
+      tbody.innerHTML = '';
 
-  /* =========================================================
-     STATE — start is always FIXED_START
-     ========================================================= */
-  function loadState() {
-    const empty = { start: FIXED_START, days: {} };
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return empty;
-      const s = JSON.parse(raw);
-      if (!s || typeof s !== 'object') return empty;
-      if (!s.days || typeof s.days !== 'object') s.days = {};
+      for (let w=0; w<6; w++) {
+        const tr = document.createElement('tr');
+        const th = document.createElement('th');
+        th.className = 'sticky-col';
+        th.textContent = `Row ${w+1}`;
+        tr.appendChild(th);
 
-      // Force the fixed start regardless of what was saved before.
-      s.start = FIXED_START;
+        for (let d=0; d<7; d++) {
+          const dt = new Date(start.getFullYear(), start.getMonth(), start.getDate()+w*7+d);
+          const iso = formatIso(dt);
+          const inM = dt.getFullYear()===currentYear && dt.getMonth()===currentMonth-1;
+          const isToday = iso === todayIso;
+          const hol = SCOTTISH_HOLIDAYS[iso] || '';
+          const entry = getEntry(iso);
 
-      Object.keys(s.days).forEach(function (k) {
-        const d = s.days[k];
-        if (!d || typeof d !== 'object') { delete s.days[k]; return; }
+          const td = document.createElement('td');
+          const box = document.createElement('div');
+          box.className = `day-cell ${entry.status==='rest'?'rest':''} ${inM?'':'out-month'} ${isToday?'today-mark':''}`;
+          box.innerHTML = `
+            <div class="cell-head">
+              <button type="button" class="date-btn">${dt.getDate()}</button>
+              ${isToday ? '<span class="today-tag">★ TODAY</span>' : ''}
+            </div>
+            <div>
+              <div class="shift-label">${entry.status==='rest'?'Rest':'On'}</div>
+              ${hol ? `<div class="holiday-mark" title="${hol}">⚑ ${hol}</div>` : ''}
+            </div>
+            <button type="button" class="staff-pill">${entry.staff}p</button>`;
 
-        // Normalise flags
-        if (d.work) d.work = true; else delete d.work;
-        if (!d.rest) delete d.rest;
-        if (!d.holiday) delete d.holiday;
+          const selectThisDate = e => {
+            e.stopPropagation();
+            selectedDate = selectedDate === iso ? null : iso;
+            document.getElementById('taskDate').value = selectedDate || '';
+            renderCalendar();
+            renderTasks();
+          };
+          box.querySelector('.date-btn').addEventListener('pointerup', e => e.stopPropagation());
+          box.querySelector('.date-btn').addEventListener('click', selectThisDate);
+          box.querySelector('.staff-pill').addEventListener('pointerup', e => e.stopPropagation());
+          box.querySelector('.staff-pill').addEventListener('click', selectThisDate);
 
-        const hasNote = !!(d.note && String(d.note).trim());
-        if (!d.rest && !d.holiday && !d.work && !hasNote) delete s.days[k];
+          box.addEventListener('pointerup', e => {
+            if (e.pointerType==='mouse' && e.button!==0) return;
+            if (e.target.closest('.staff-pill') || e.target.closest('.date-btn')) return;
+            const t = Date.now(), prev = lastTapTimes[iso] || 0;
+            if (t - prev < 270) {
+              clearTimeout(tapTimers[iso]); lastTapTimes[iso] = 0;
+              setEntry(iso, { status:'work' });
+            } else {
+              lastTapTimes[iso] = t;
+              clearTimeout(tapTimers[iso]);
+              tapTimers[iso] = setTimeout(() => setEntry(iso, { status:'rest' }), 270);
+            }
+          });
+          td.appendChild(box);
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      renderInspector();
+    }
+
+    function renderTasks() {
+      const q = document.getElementById('taskSearch').value.trim().toLowerCase();
+      const listEl = document.getElementById('taskList');
+      document.getElementById('clearTaskDateFilterBtn').style.display = selectedDate ? 'inline-block' : 'none';
+      const filtered = state.tasks.filter(t => (!selectedDate || t.date===selectedDate) && (!q || (t.title+' '+t.assignee+' '+t.date).toLowerCase().includes(q)));
+      const open = state.tasks.filter(t => !t.completed).length;
+      document.getElementById('taskSummary').textContent = `${open} open · ${state.tasks.length - open} completed`;
+      listEl.innerHTML = filtered.length ? '' : '<div style="padding:20px; text-align:center; font-size:12px; color:#64748b;">No matching tasks.</div>';
+      filtered.forEach(task => {
+        const div = document.createElement('div');
+        div.className = `task-item ${task.completed?'done':''}`;
+        div.innerHTML = `
+          <input type="checkbox" ${task.completed?'checked':''} style="margin-top:3px;" />
+          <div style="flex:1; min-width:0;">
+            <div class="task-title" style="font-size:13px; font-weight:600;">${task.title}</div>
+            <div class="task-meta">${task.date||'General'} · ${task.priority}${task.assignee?' · '+task.assignee:''}</div>
+          </div>
+          <button type="button" class="btn" style="padding:2px 7px; font-size:11px;">✕</button>`;
+        div.querySelector('input').onchange = () => { task.completed = !task.completed; saveState(); renderTasks(); };
+        div.querySelector('button').onclick = () => { state.tasks = state.tasks.filter(x=>x.id!==task.id); saveState(); renderTasks(); };
+        listEl.appendChild(div);
       });
-
-      return s;
-    } catch (e) {
-      return empty;
-    }
-  }
-
-  let state = loadState();
-  let noteCell = null;     // cell whose note editor is open
-  let suppressTap = false; // ignore the tap that dismissed the note popover
-
-  /* =========================================================
-     PERSISTENCE (auto-save on every change)
-     ========================================================= */
-  let savedTimer = null;
-
-  function persist() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) { /* storage full / disabled – ignore */ }
-
-    savedEl.classList.add('show');
-    clearTimeout(savedTimer);
-    savedTimer = setTimeout(() => savedEl.classList.remove('show'), 1300);
-  }
-
-  function cleanup(key) {
-    const d = state.days[key];
-    if (!d) return;
-    const hasNote = !!(d.note && String(d.note).trim());
-    if (!d.rest && !d.holiday && !d.work && !hasNote) delete state.days[key];
-  }
-
-  /* =========================================================
-     PAINT A CELL
-       default (no flags) -> WORKING day (lemon green)
-     ========================================================= */
-  function paint(cell) {
-    const key = cell.dataset.date;
-    const d = state.days[key] || {};
-
-    const holiday = !!d.holiday;
-    const rest    = !!d.rest && !holiday;
-    // If bank holiday AND not explicitly overridden to work
-    const bank    = BANK_HOLIDAYS.has(key) && !holiday && !rest && !d.work;
-    const work    = !holiday && !rest; // everything else is a working day
-
-    cell.classList.toggle('holiday', holiday);
-    cell.classList.toggle('rest', rest);
-    cell.classList.toggle('bank', bank);
-    cell.classList.toggle('work', work);
-    cell.classList.toggle('has-note', !!(d.note && String(d.note).trim()));
-  }
-
-  /* =========================================================
-     STATE SETTERS
-       1× click  -> working day (lemon green; toggles bank override)
-       2× click  -> rest day    (red + REST)
-       3× click  -> holiday     (water blue + HD)
-     ========================================================= */
-  function setWork(cell) {
-    const key = cell.dataset.date;
-    const d = state.days[key] || (state.days[key] = {});
-
-    delete d.rest;
-    delete d.holiday;
-
-    if (BANK_HOLIDAYS.has(key)) {
-      // Toggle override: first click -> remove purple border, second click -> restore it
-      d.work = !d.work;
-      if (!d.work) delete d.work;
-    } else {
-      delete d.work;
     }
 
-    cleanup(key);
-    paint(cell);
-    persist();
-  }
-
-  function setRest(cell) {
-    const key = cell.dataset.date;
-    const d = state.days[key] || (state.days[key] = {});
-    delete d.work;
-    d.rest = true;
-    d.holiday = false;
-    cleanup(key);
-    paint(cell);
-    persist();
-  }
-
-  function setHoliday(cell) {
-    const key = cell.dataset.date;
-    const d = state.days[key] || (state.days[key] = {});
-    delete d.work;
-    d.rest = false;
-    d.holiday = true;
-    cleanup(key);
-    paint(cell);
-    persist();
-  }
-
-  /* =========================================================
-     CELL INTERACTIONS
-       click        -> working day (lemon green)
-       double click -> rest day    (red + REST)
-       triple click -> holiday     (water blue + HD)
-       press & hold -> note editor (note text stays hidden)
-     ========================================================= */
-  function attach(cell) {
-    let holdTimer = null;
-    let held = false;
-    let clicks = 0;
-    let clickTimer = null;
-
-    function handleTap() {
-      clicks++;
-      clearTimeout(clickTimer);
-
-      if (clicks === 1) {
-        setWork(cell);
-      } else if (clicks === 2) {
-        setRest(cell);
-      } else {
-        setHoliday(cell);
-        clicks = 0;
-        return;
+    document.getElementById('prevMonthBtn').onclick = () => { if (!(currentYear===2026 && currentMonth===1)) { currentMonth--; if (currentMonth<1){currentMonth=12;currentYear--;} renderCalendar(); }};
+    document.getElementById('nextMonthBtn').onclick = () => { if (!(currentYear===2028 && currentMonth===12)) { currentMonth++; if (currentMonth>12){currentMonth=1;currentYear++;} renderCalendar(); }};
+    document.getElementById('todayBtn').onclick = () => { const d=new Date(); currentYear=Math.min(2028,Math.max(2026,d.getFullYear())); currentMonth=d.getMonth()+1; renderCalendar(); };
+    document.getElementById('monthSelect').onchange = e => { currentMonth = Number(e.target.value); renderCalendar(); };
+    document.getElementById('yearSelect').onchange = e => { currentYear = Number(e.target.value); renderCalendar(); };
+    document.getElementById('resetMonthBtn').onclick = () => { const p=`${currentYear}-${String(currentMonth).padStart(2,'0')}`; Object.keys(state.entries).forEach(k=>{if(k.startsWith(p)) delete state.entries[k];}); saveState(); renderCalendar(); };
+    document.getElementById('clearTaskDateFilterBtn').onclick = () => { selectedDate = null; renderCalendar(); renderTasks(); };
+    document.getElementById('taskSearch').oninput = renderTasks;
+    document.getElementById('addTaskForm').onsubmit = e => {
+      e.preventDefault();
+      const title = document.getElementById('taskTitle').value.trim();
+      if (!title) return;
+      state.tasks.unshift({ id:'t_'+Date.now(), title, date:document.getElementById('taskDate').value||'', priority:document.getElementById('taskPriority').value, assignee:document.getElementById('taskAssignee').value.trim(), completed:false });
+      document.getElementById('taskTitle').value=''; document.getElementById('taskAssignee').value='';
+      saveState(); renderTasks();
+    };
+    const photoInput = document.getElementById('photoInput'), dropzone = document.getElementById('photoDropzone');
+    document.getElementById('uploadPhotoTopBtn').onclick = () => photoInput.click();
+    dropzone.onclick = () => photoInput.click();
+    const showPhoto = f => { if (!f || !f.type.startsWith('image/')) return; const r=new FileReader(); r.onload=()=>{ dropzone.innerHTML=`<img src="${r.result}" alt="Schedule"/><span style="font-size:11px;">${f.name}</span>`; }; r.readAsDataURL(f); };
+    photoInput.onchange = e => showPhoto(e.target.files[0]);
+    dropzone.ondragover = e => e.preventDefault();
+    dropzone.ondrop = e => { e.preventDefault(); showPhoto(e.dataTransfer.files[0]); };
+    document.getElementById('applyAskalBtn').onclick = () => {
+      const restDates = document.getElementById('askalDatesInput').value.split(',').map(s=>s.trim()).filter(s=>/^\d{4}-\d{2}-\d{2}$/.test(s));
+      const staff = Math.max(0, Math.min(500, Number(document.getElementById('defaultStaffInput').value)||0));
+      const p = `${currentYear}-${String(currentMonth).padStart(2,'0')}`, days = new Date(currentYear, currentMonth, 0).getDate();
+      for (let d=1; d<=days; d++) {
+        const iso = `${p}-${String(d).padStart(2,'0')}`, isRest = restDates.includes(iso);
+        state.entries[iso] = { status:isRest?'rest':'work', staff:isRest?0:staff, note:isRest?'Askal: Rest':'' };
       }
+      saveState(); renderCalendar();
+      document.getElementById('scanStatus').textContent = `Applied ${restDates.length} Askal rest date(s) & ${staff} staff.`;
+    };
+    document.getElementById('exportDataBtn').onclick = () => { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); a.download='rostersync-backup.json'; a.click(); };
+    document.getElementById('importDataBtn').onclick = () => document.getElementById('importJsonInput').click();
+    document.getElementById('importJsonInput').onchange = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ try{const p=JSON.parse(String(r.result)); state={entries:p.entries||{},tasks:p.tasks||[]}; saveState(); renderCalendar(); renderTasks();}catch{} }; r.readAsText(f); };
 
-      clickTimer = setTimeout(function () { clicks = 0; }, CLICK_MS);
-    }
-
-    cell.addEventListener('pointerdown', function (e) {
-      if (e.button !== undefined && e.button > 0) return;
-
-      // A tap that dismisses the note popover must not change the day.
-      if (!notePop.hidden) {
-        closeNote();
-        suppressTap = true;
-        held = true;
-        return;
-      }
-
-      held = false;
-      clearTimeout(holdTimer);
-
-      holdTimer = setTimeout(function () {
-        held = true;
-        clearTimeout(clickTimer);
-        clicks = 0;
-        openNote(cell);
-        if (navigator.vibrate) { try { navigator.vibrate(12); } catch (_) {} }
-      }, HOLD_MS);
-    });
-
-    cell.addEventListener('pointerup', function () {
-      clearTimeout(holdTimer);
-
-      if (suppressTap) { suppressTap = false; held = false; return; }
-      if (held) { held = false; return; }
-
-      handleTap();
-    });
-
-    cell.addEventListener('pointercancel', function () {
-      clearTimeout(holdTimer);
-      held = false;
-    });
-
-    cell.addEventListener('pointerleave', function (e) {
-      if (e.pointerType === 'mouse') { clearTimeout(holdTimer); held = false; }
-    });
-
-    cell.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    cell.addEventListener('dragstart', function (e) { e.preventDefault(); });
-  }
-
-  /* =========================================================
-     NOTE POPOVER
-     ========================================================= */
-  function positionPopover() {
-    if (!noteCell) return;
-    const r = noteCell.getBoundingClientRect();
-    const w = notePop.offsetWidth;
-    const h = notePop.offsetHeight;
-
-    let left = r.left + r.width / 2 - w / 2;
-    left = Math.max(10, Math.min(left, window.innerWidth - w - 10));
-
-    let top = r.bottom + 8;
-    if (top + h > window.innerHeight - 10) top = Math.max(10, r.top - h - 8);
-
-    notePop.style.left = left + 'px';
-    notePop.style.top  = top + 'px';
-  }
-
-  function openNote(cell) {
-    if (noteCell && noteCell !== cell) closeNote();
-
-    suppressTap = false;
-    noteCell = cell;
-
-    const key = cell.dataset.date;
-    const d = state.days[key] || {};
-
-    noteDateEl.textContent = prettyDate(key);
-    noteText.value = d.note || '';
-    notePop.hidden = false;
-    positionPopover();
-
-    requestAnimationFrame(function () {
-      noteText.focus({ preventScroll: true });
-      const len = noteText.value.length;
-      try { noteText.setSelectionRange(len, len); } catch (_) {}
-    });
-  }
-
-  function closeNote() {
-    if (!noteCell) return;
-
-    const key = noteCell.dataset.date;
-    const text = noteText.value.trim();
-    const d = state.days[key] || (state.days[key] = {});
-
-    if (text) d.note = text;
-    else delete d.note;
-
-    cleanup(key);
-    paint(noteCell);
-
-    notePop.hidden = true;
-    noteCell = null;
-    persist();
-  }
-
-  document.getElementById('noteSave').addEventListener('click', closeNote);
-  document.getElementById('noteClose').addEventListener('click', closeNote);
-  document.getElementById('noteDelete').addEventListener('click', function () {
-    noteText.value = '';
-    closeNote();
-  });
-
-  document.addEventListener('pointerdown', function (e) {
-    if (notePop.hidden) return;
-    if (!notePop.contains(e.target)) closeNote();
-  }, true);
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !notePop.hidden) closeNote();
-  });
-
-  window.addEventListener('resize', function () {
-    if (!notePop.hidden) positionPopover();
-  });
-
-  scrollerEl.addEventListener('scroll', function () {
-    if (!notePop.hidden) closeNote();
-  }, { passive: true });
-
-  /* =========================================================
-     RENDER
-     ========================================================= */
-  function buildMonth(year, month, start, end, todayKey) {
-    const section = document.createElement('section');
-    section.className = 'month';
-
-    /* --- frozen month title (bold capitals) --- */
-    const title = document.createElement('h2');
-    title.className = 'month-title';
-    title.textContent = MONTHS[month] + ' ' + year;
-    section.appendChild(title);
-
-    /* --- frozen weekday row (Sunday first, bold capitals) --- */
-    const wdRow = document.createElement('div');
-    wdRow.className = 'weekdays';
-    for (let i = 0; i < 7; i++) {
-      const s = document.createElement('span');
-      s.textContent = WD_SHORT[i];
-      wdRow.appendChild(s);
-    }
-    section.appendChild(wdRow);
-
-    /* --- day grid --- */
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-
-    // leading blanks so the 1st lands on the correct weekday column
-    const firstDow = new Date(year, month, 1).getDay(); // 0 = Sunday
-    for (let i = 0; i < firstDow; i++) {
-      const b = document.createElement('div');
-      b.className = 'cell out blank';
-      grid.appendChild(b);
-    }
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      const key  = ymd(date);
-      const inRange = date >= start && date <= end;
-
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-
-      const num = document.createElement('span');
-      num.className = 'num';
-      num.textContent = day;
-      cell.appendChild(num);
-
-      if (inRange) {
-        cell.dataset.date = key;
-        if (key === todayKey) cell.classList.add('today');
-
-        const dot = document.createElement('span');
-        dot.className = 'dot';
-
-        const hd = document.createElement('span');
-        hd.className = 'hd';
-        hd.textContent = 'HD';
-
-        const restTag = document.createElement('span');
-        restTag.className = 'rest-tag';
-        restTag.textContent = 'REST';
-
-        const bhTag = document.createElement('span');
-        bhTag.className = 'bh';
-        bhTag.textContent = 'BH';
-
-        cell.appendChild(dot);
-        cell.appendChild(hd);
-        cell.appendChild(restTag);
-        cell.appendChild(bhTag);
-
-        attach(cell);
-        paint(cell);   // paint decides: bank -> purple border, otherwise lemon
-      } else {
-        cell.classList.add('out');
-      }
-
-      grid.appendChild(cell);
-    }
-
-    section.appendChild(grid);
-    return section;
-  }
-
-  function render() {
-    const start = parseYmd(state.start);   // always FIXED_START
-    const end   = parseYmd(END_DATE);
-    const todayKey = ymd(new Date());
-
-    const frag = document.createDocumentFragment();
-    let y = start.getFullYear();
-    let m = start.getMonth();
-    const endY = end.getFullYear();
-    const endM = end.getMonth();
-
-    while (y < endY || (y === endY && m <= endM)) {
-      frag.appendChild(buildMonth(y, m, start, end, todayKey));
-      m++;
-      if (m > 11) { m = 0; y++; }
-    }
-
-    calendarEl.replaceChildren(frag);
-
-    // Header label — fixed range
-    rangeLabel.textContent = '27 Oct 2026  →  31 Dec 2027';
-  }
-
-  /* =========================================================
-     GO
-     ========================================================= */
-  render();
-})();
-</script>
+    populateSelectors(); renderCalendar(); renderTasks();
+  </script>
 </body>
 </html>
