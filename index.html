@@ -313,7 +313,6 @@
     .tag-today { background: #0f172a; }
     .tag-start { background: #365314; }
     .tag-hd { background: #0c4a6e; }
-    .tag-scan { background: #7f1d1d; }
 
     .cell-state {
       font-size: 11px;
@@ -405,118 +404,6 @@
       margin-bottom: 8px;
     }
 
-    /* ---------- Photo scan panel ---------- */
-    .scan-panel {
-      display: none;
-      margin-top: 10px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 10px;
-      background: #f8fafc;
-      text-align: left;
-    }
-    .scan-panel.open { display: block; }
-
-    .scan-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      font-size: 12px;
-    }
-
-    .scan-controls select {
-      padding: 6px 8px;
-      border: 1px solid var(--border-hairline);
-      border-radius: 7px;
-      background: #fff;
-      font-weight: 600;
-    }
-
-    .scan-controls label {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .scan-status {
-      font-size: 12px;
-      color: #475569;
-      margin-top: 8px;
-      min-height: 16px;
-    }
-
-    .scan-results {
-      max-height: 300px;
-      overflow: auto;
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .scan-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      padding: 5px 7px;
-      border: 1px solid #e2e8f0;
-      border-radius: 7px;
-      background: #fff;
-    }
-
-    .scan-row .scan-date {
-      font-weight: 700;
-      min-width: 68px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .scan-row .scan-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 4px;
-      min-width: 58px;
-      text-align: center;
-    }
-
-    .badge-rest { background: var(--rest-bg); color: #fff; }
-    .badge-work { background: var(--lemon-bg); color: var(--lemon-text); }
-    .badge-hd   { background: var(--hd-bg); color: var(--hd-text); }
-    .badge-none { background: #e2e8f0; color: #475569; }
-
-    .scan-row input[type="number"] {
-      width: 58px;
-      padding: 3px 5px;
-      border: 1px solid var(--border-hairline);
-      border-radius: 6px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .scan-row select {
-      padding: 3px 5px;
-      border: 1px solid var(--border-hairline);
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .scan-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .scan-hint {
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 6px;
-    }
-
     .task-form {
       display: grid;
       gap: 8px;
@@ -564,7 +451,6 @@
       .holiday-strip { font-size: 8px; padding: 1px 2px; }
       .staff-bar { font-size: 9px; justify-content: center; padding: 1px 2px; }
       .staff-btn { display: none; }
-      .scan-row { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -650,7 +536,7 @@
       </div>
     </section>
 
-    <!-- Photo Preview, Photo Scan & Task Dashboard -->
+    <!-- Photo Preview & Task Dashboard -->
     <div style="display:flex; flex-direction:column; gap:16px;">
       <section class="card panel-pad" aria-label="Schedule Photo">
         <h2>Schedule Photo</h2>
@@ -658,7 +544,7 @@
           <input type="file" id="photoInput" accept="image/*" style="display:none;" />
           <div id="photoPreviewWrap" style="display:none;">
             <img id="photoPreviewImg" alt="Uploaded schedule preview" />
-            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; justify-content:center; gap:8px;">
               <button type="button" class="btn" id="replacePhotoBtn">Upload Another</button>
               <button type="button" class="btn btn-danger" id="removePhotoBtn">Remove Photo</button>
             </div>
@@ -667,27 +553,6 @@
             <button type="button" class="btn btn-dark" id="uploadPhotoBtn">Upload Schedule Photo</button>
             <div style="font-size:11px; color:#64748b; margin-top:6px;">
               Attach your roster photo for quick reference alongside Askal's rest days &amp; staff counts.
-            </div>
-          </div>
-
-          <!-- Photo → calendar scanner -->
-          <div class="scan-panel" id="scanPanel">
-            <div class="scan-controls">
-              <button type="button" class="btn btn-dark" id="scanPhotoBtn">&#128269; Scan Photo for Off Days</button>
-              <label>Month <select id="scanMonth" aria-label="Photo month"></select></label>
-              <label>Year <select id="scanYear" aria-label="Photo year"></select></label>
-              <label><input type="checkbox" id="scanApplyCounts" checked /> Set staff counts</label>
-            </div>
-            <div class="scan-status" id="scanStatus">Pick the month shown in the photo, then scan.</div>
-            <div class="scan-results" id="scanResults"></div>
-            <div class="scan-actions" id="scanActions" style="display:none;">
-              <button type="button" class="btn btn-dark" id="scanApplyBtn">Apply to Calendar</button>
-              <button type="button" class="btn" id="scanClearBtn">Dismiss</button>
-            </div>
-            <div class="scan-hint">
-              OFF / REST / RD / AL / HOL / LEAVE cells become Red Neon (Rest). Working cells keep the
-              Lemon (Day) colour and their detected staff number is written into the “staff” bar.
-              OCR runs entirely in your browser &mdash; the engine is fetched once from a CDN.
             </div>
           </div>
         </div>
@@ -719,7 +584,6 @@
       var MIN_YEAR = 2026;
       var MAX_YEAR = 2028;
       var HOLD_CYCLE = ['rest', 'work', 'hd'];
-      var OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js';
 
       var MONTH_NAMES = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -767,7 +631,6 @@
       var state = loadState();
       if (!state.entries) state.entries = {};
       if (!state.tasks) state.tasks = [];
-      if (!state.scanned) state.scanned = {};   // iso -> true (marked by photo scan)
 
       function saveStateSync(noticeText) {
         try {
@@ -784,8 +647,6 @@
         var day = String(d.getDate()).padStart(2, '0');
         return y + '-' + m + '-' + day;
       }
-
-      function pad2(n) { return String(n).padStart(2, '0'); }
 
       function clampYM(y, m) {
         if (y < MIN_YEAR) return { year: MIN_YEAR, month: 1 };
@@ -826,7 +687,6 @@
       function setDayStatus(iso, nextStatus) {
         var prev = state.entries[iso] || { count: 0 };
         state.entries[iso] = { status: nextStatus, count: prev.count || 0 };
-        delete state.scanned[iso];
         var label = nextStatus === 'rest' ? 'Saved · Rest' : nextStatus === 'hd' ? 'Saved · HD' : 'Saved · Day';
         saveStateSync(label);
         renderCalendar();
@@ -842,9 +702,6 @@
         if (selectedDate === iso) renderInspector();
       }
 
-      /* ---------------------------------------------------------------
-         CALENDAR RENDER
-      ---------------------------------------------------------------- */
       function renderCalendar() {
         var y = currentYM.year;
         var m = currentYM.month;
@@ -917,12 +774,6 @@
               sSpan.className = 'tag tag-start';
               sSpan.textContent = 'START';
               top.appendChild(sSpan);
-            } else if (state.scanned[iso] && visual === 'rest') {
-              var cSpan = document.createElement('span');
-              cSpan.className = 'tag tag-scan';
-              cSpan.textContent = 'OFF';
-              cSpan.title = 'Detected as a rest / off day from the scanned photo';
-              top.appendChild(cSpan);
             } else if (visual === 'hd') {
               var hSpan = document.createElement('span');
               hSpan.className = 'tag tag-hd';
@@ -1084,18 +935,15 @@
       function renderPhoto() {
         var previewWrap = document.getElementById('photoPreviewWrap');
         var emptyWrap = document.getElementById('photoEmptyWrap');
-        var scanPanel = document.getElementById('scanPanel');
         var img = document.getElementById('photoPreviewImg');
         if (state.photoDataUrl) {
           img.src = state.photoDataUrl;
           previewWrap.style.display = 'block';
           emptyWrap.style.display = 'none';
-          scanPanel.classList.add('open');
         } else {
           img.removeAttribute('src');
           previewWrap.style.display = 'none';
           emptyWrap.style.display = 'block';
-          scanPanel.classList.remove('open');
         }
       }
 
@@ -1149,410 +997,7 @@
         });
       }
 
-      /* ---------------------------------------------------------------
-         PHOTO SCANNER  (OCR → detect OFF/REST days + working staff)
-      ---------------------------------------------------------------- */
-
-      var ocrLoadPromise = null;
-      var scanResults = null;
-
-      function setScanStatus(msg) {
-        document.getElementById('scanStatus').textContent = msg;
-      }
-
-      function loadOcrLib() {
-        if (window.Tesseract) return Promise.resolve();
-        if (ocrLoadPromise) return ocrLoadPromise;
-        ocrLoadPromise = new Promise(function (resolve, reject) {
-          var s = document.createElement('script');
-          s.src = OCR_CDN;
-          s.async = true;
-          s.onload = function () { resolve(); };
-          s.onerror = function () {
-            ocrLoadPromise = null;
-            reject(new Error('Could not load the OCR engine. An internet connection is needed the first time.'));
-          };
-          document.head.appendChild(s);
-        });
-        return ocrLoadPromise;
-      }
-
-      // Grayscale + contrast-boost + upscale, then hand a canvas to Tesseract.
-      function preprocessImage(dataUrl) {
-        return new Promise(function (resolve, reject) {
-          var img = new Image();
-          img.onload = function () {
-            var scale;
-            if (img.width < 1400) scale = 1400 / img.width;         // upscale small shots
-            else scale = Math.min(1, 2400 / img.width);              // shrink huge ones
-            var w = Math.max(1, Math.round(img.width * scale));
-            var h = Math.max(1, Math.round(img.height * scale));
-
-            var canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-
-            try {
-              var imgData = ctx.getImageData(0, 0, w, h);
-              var d = imgData.data;
-              for (var i = 0; i < d.length; i += 4) {
-                var g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-                g = (g - 128) * 1.45 + 128;       // contrast
-                if (g < 0) g = 0; else if (g > 255) g = 255;
-                d[i] = d[i + 1] = d[i + 2] = g;
-              }
-              ctx.putImageData(imgData, 0, 0);
-            } catch (e) { /* tainted canvas — just use the raw draw */ }
-
-            resolve(canvas);
-          };
-          img.onerror = function () { reject(new Error('Could not read the photo.')); };
-          img.src = dataUrl;
-        });
-      }
-
-      function runOcr(canvas) {
-        return Tesseract.recognize(canvas, 'eng', {
-          logger: function (m) {
-            if (!m) return;
-            if (m.status === 'recognizing text') {
-              setScanStatus('Reading photo… ' + Math.round((m.progress || 0) * 100) + '%');
-            } else if (m.status) {
-              setScanStatus(m.status.charAt(0).toUpperCase() + m.status.slice(1) + '…');
-            }
-          }
-        }).then(function (res) {
-          return extractWords(res && res.data ? res.data : {});
-        });
-      }
-
-      function extractWords(data) {
-        var list = [];
-        if (Array.isArray(data.words) && data.words.length) {
-          list = data.words;
-        } else if (Array.isArray(data.blocks)) {
-          data.blocks.forEach(function (b) {
-            (b.paragraphs || []).forEach(function (p) {
-              (p.lines || []).forEach(function (l) {
-                (l.words || []).forEach(function (w) { list.push(w); });
-              });
-            });
-          });
-        }
-        return list.map(function (w) {
-          var b = w.bbox || {};
-          return {
-            text: (w.text || '').trim(),
-            conf: typeof w.confidence === 'number' ? w.confidence : 100,
-            bbox: {
-              x0: b.x0 || 0, y0: b.y0 || 0,
-              x1: b.x1 || 0, y1: b.y1 || 0
-            }
-          };
-        }).filter(function (w) {
-          return w.text && w.bbox.x1 > w.bbox.x0;
-        });
-      }
-
-      // "12", "12th", "12/11", "12-11-26" → day number for the chosen month/year
-      function dayNumberFrom(text, month, year) {
-        var m = text.match(/^(\d{1,2})(?:st|nd|rd|th)?$/i);
-        if (m) {
-          var n = parseInt(m[1], 10);
-          return (n >= 1 && n <= 31) ? n : null;
-        }
-        m = text.match(/^(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?$/);
-        if (m) {
-          var a = parseInt(m[1], 10);
-          var b = parseInt(m[2], 10);
-          var y = m[3] ? parseInt(m[3], 10) : null;
-          if (y !== null && y < 100) y += 2000;
-          var yOk = (y === null || y === year);
-          if (yOk && b === month && a >= 1 && a <= 31) return a;   // dd/mm
-          if (yOk && a === month && b >= 1 && b <= 31) return b;   // mm/dd
-        }
-        return null;
-      }
-
-      var OFF_STRONG = /^(OFF|OFFS|REST|RESTDAY|RDO|RD|R\/D|LEAVE|AL|HOL|HOLIDAY|PH|ABS|ABSENT|SICK|SL|OFFDAY|DAYOFF)$/i;
-      var OFF_WEAK = /^(O|X|-|—|–|\*|\.|NO)$/i;
-      var STOP_WORDS = {
-        SHIFT: 1, DAY: 1, NIGHT: 1, WEEK: 1, TOTAL: 1, HRS: 1, HR: 1, HOUR: 1, HOURS: 1,
-        STAFF: 1, NAME: 1, DATE: 1, MON: 1, TUE: 1, WED: 1, THU: 1, FRI: 1, SAT: 1, SUN: 1,
-        AM: 1, PM: 1, NOTE: 1, NOTES: 1, REMARK: 1, REMARKS: 1, ROSTER: 1, SCHEDULE: 1,
-        WEEKLY: 1, TEAM: 1, MANAGER: 1, PAGE: 1, OF: 1, THE: 1
-      };
-      var TIME_RANGE = /^\d{1,2}(:\d{2})?[-–]\d{1,2}(:\d{2})?$/;
-      var SHIFT_CODE = /^[DEPLANM]$/;
-
-      function analyzeRoster(words, year, month) {
-        var cleaned = [];
-        words.forEach(function (w) {
-          var t = (w.text || '').trim();
-          if (!t) return;
-          if (typeof w.conf === 'number' && w.conf < 30) return;
-          if (!w.bbox) return;
-          cleaned.push({
-            text: t,
-            up: t.toUpperCase(),
-            cx: (w.bbox.x0 + w.bbox.x1) / 2,
-            cy: (w.bbox.y0 + w.bbox.y1) / 2,
-            x0: w.bbox.x0, y0: w.bbox.y0,
-            x1: w.bbox.x1, y1: w.bbox.y1,
-            h: Math.max(1, w.bbox.y1 - w.bbox.y0)
-          });
-        });
-
-        if (!cleaned.length) {
-          return { days: [], note: 'No readable text found in that photo. Try a sharper, brighter, straight-on image.' };
-        }
-
-        var heights = cleaned.map(function (w) { return w.h; }).sort(function (a, b) { return a - b; });
-        var medH = heights[Math.floor(heights.length / 2)] || 12;
-
-        // 1. Collect day-number tokens
-        var dayTokens = [];
-        cleaned.forEach(function (w) {
-          var n = dayNumberFrom(w.text, month, year);
-          if (n !== null) { w.dayNum = n; dayTokens.push(w); }
-        });
-        if (dayTokens.length < 5) {
-          return { days: [], note: 'Could not find a row of day numbers. Make sure the whole roster grid is visible and the right month is selected.' };
-        }
-
-        // 2. Cluster tokens into horizontal bands
-        dayTokens.sort(function (a, b) { return a.cy - b.cy; });
-        var tol = medH * 0.8;
-        var clusters = [];
-        dayTokens.forEach(function (w) {
-          var last = clusters[clusters.length - 1];
-          if (last && Math.abs(w.cy - last.cy) <= tol) {
-            last.items.push(w);
-            last.cy = last.items.reduce(function (s, x) { return s + x.cy; }, 0) / last.items.length;
-          } else {
-            clusters.push({ cy: w.cy, items: [w] });
-          }
-        });
-
-        // Dedupe day numbers inside each band (leftmost wins)
-        clusters.forEach(function (c) {
-          c.items.sort(function (a, b) { return a.cx - b.cx; });
-          var seen = {};
-          var uniq = [];
-          c.items.forEach(function (w) {
-            if (seen[w.dayNum]) return;
-            seen[w.dayNum] = 1;
-            uniq.push(w);
-          });
-          c.items = uniq;
-        });
-
-        // Best band = most distinct day numbers (tie → topmost)
-        clusters.sort(function (a, b) {
-          return (b.items.length - a.items.length) || (a.cy - b.cy);
-        });
-        var header = clusters[0];
-
-        if (!header || header.items.length < 5) {
-          return { days: [], note: 'Could not lock onto a date header row. A flatter, higher-resolution photo works best.' };
-        }
-
-        // 3. Build columns
-        var cols = header.items.slice().sort(function (a, b) { return a.cx - b.cx; });
-        var headerBottom = Math.max.apply(null, cols.map(function (w) { return w.y1; }));
-
-        var spacings = [];
-        for (var i = 1; i < cols.length; i++) spacings.push(cols[i].cx - cols[i - 1].cx);
-        spacings.sort(function (a, b) { return a - b; });
-        var medSpacing = spacings.length ? spacings[Math.floor(spacings.length / 2)] : medH * 3;
-        var maxDist = Math.max(medSpacing * 0.75, medH * 1.6);
-
-        var buckets = cols.map(function (w) {
-          return { day: w.dayNum, cx: w.cx, words: [] };
-        });
-
-        // 4. Assign body words to the nearest column
-        cleaned.forEach(function (w) {
-          if (w.cy <= headerBottom - medH * 0.25) return;    // above/inside the header row
-          var best = -1;
-          var bestD = Infinity;
-          for (var k = 0; k < buckets.length; k++) {
-            var d = Math.abs(w.cx - buckets[k].cx);
-            if (d < bestD) { bestD = d; best = k; }
-          }
-          if (best >= 0 && bestD <= maxDist) buckets[best].words.push(w);
-        });
-
-        // 5. Classify each column
-        var days = buckets.map(function (b) {
-          var offStrong = 0;
-          var offWeak = 0;
-          var names = {};
-          var workCells = 0;
-          var offSample = [];
-
-          b.words.forEach(function (w) {
-            var t = w.up.replace(/[^A-Z0-9\/\-\.\*:–—]/g, '');
-            if (!t) return;
-
-            if (OFF_STRONG.test(t)) {
-              offStrong++;
-              if (offSample.length < 3) offSample.push(w.text);
-              return;
-            }
-            if (OFF_WEAK.test(t)) { offWeak++; return; }
-
-            var isName = /^[A-Z][A-Z'\.\-]{1,}$/.test(t) && !STOP_WORDS[t];
-            if (isName || TIME_RANGE.test(t) || SHIFT_CODE.test(t)) {
-              workCells++;
-              if (isName) names[t] = 1;
-            }
-          });
-
-          var rest = offStrong > 0 || offWeak >= 2;
-          var staffCount = workCells;
-
-          return {
-            day: b.day,
-            month: month,
-            year: year,
-            iso: year + '-' + pad2(month) + '-' + pad2(b.day),
-            rest: rest,
-            offStrong: offStrong,
-            offWeak: offWeak,
-            workCells: workCells,
-            staffCount: staffCount,
-            sample: offSample
-          };
-        }).sort(function (a, b) { return a.day - b.day; });
-
-        return { days: days, note: '' };
-      }
-
-      function renderScanResults(res) {
-        var wrap = document.getElementById('scanResults');
-        var actions = document.getElementById('scanActions');
-        wrap.innerHTML = '';
-
-        if (!res || !res.days.length) {
-          actions.style.display = 'none';
-          if (res && res.note) {
-            var p = document.createElement('div');
-            p.className = 'scan-hint';
-            p.textContent = res.note;
-            wrap.appendChild(p);
-          }
-          return;
-        }
-
-        res.days.forEach(function (d) {
-          d.selected = d.rest || d.staffCount > 0;
-          d.status = d.rest ? 'rest' : (d.workCells > 0 ? 'work' : 'skip');
-
-          var row = document.createElement('div');
-          row.className = 'scan-row';
-
-          var cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.checked = d.selected;
-          cb.title = 'Apply this row to the calendar';
-          cb.addEventListener('change', function () { d.selected = cb.checked; });
-          row.appendChild(cb);
-
-          var dateEl = document.createElement('span');
-          dateEl.className = 'scan-date';
-          dateEl.textContent = d.day + ' ' + MONTH_NAMES[d.month - 1].slice(0, 3);
-          row.appendChild(dateEl);
-
-          var badge = document.createElement('span');
-          badge.className = 'scan-badge ' + (d.rest ? 'badge-rest' : (d.workCells ? 'badge-work' : 'badge-none'));
-          badge.textContent = d.rest ? 'OFF / REST' : (d.workCells ? 'Working' : '—');
-          if (d.sample.length) badge.title = 'Detected: ' + d.sample.join(', ');
-          row.appendChild(badge);
-
-          var sel = document.createElement('select');
-          [['rest', 'Rest'], ['work', 'Day'], ['hd', 'HD'], ['skip', 'Ignore']].forEach(function (o) {
-            var opt = document.createElement('option');
-            opt.value = o[0];
-            opt.textContent = o[1];
-            if (o[0] === d.status) opt.selected = true;
-            sel.appendChild(opt);
-          });
-          sel.addEventListener('change', function () { d.status = sel.value; });
-          row.appendChild(sel);
-
-          var cnt = document.createElement('input');
-          cnt.type = 'number';
-          cnt.min = 0;
-          cnt.max = 500;
-          cnt.value = d.staffCount;
-          cnt.title = 'Staff counted as working on this date';
-          cnt.addEventListener('input', function () {
-            d.staffCount = Math.max(0, Math.min(500, parseInt(cnt.value, 10) || 0));
-          });
-          row.appendChild(cnt);
-
-          var lbl = document.createElement('span');
-          lbl.style.fontSize = '10px';
-          lbl.style.color = '#64748b';
-          lbl.textContent = 'staff';
-          row.appendChild(lbl);
-
-          wrap.appendChild(row);
-        });
-
-        actions.style.display = 'flex';
-      }
-
-      function applyScanResults() {
-        if (!scanResults || !scanResults.days.length) return;
-
-        var applyCounts = document.getElementById('scanApplyCounts').checked;
-        var statusDays = 0;
-        var restDays = 0;
-        var counted = 0;
-
-        scanResults.days.forEach(function (d) {
-          if (!d.selected || d.status === 'skip') return;
-
-          var prev = state.entries[d.iso] || { count: 0 };
-          var count = prev.count || 0;
-
-          if (applyCounts && d.staffCount > 0) {
-            count = d.staffCount;
-            counted++;
-          }
-
-          state.entries[d.iso] = { status: d.status, count: count };
-
-          if (d.status === 'rest') {
-            state.scanned[d.iso] = true;
-            restDays++;
-          } else {
-            delete state.scanned[d.iso];
-          }
-          statusDays++;
-        });
-
-        var y = Number(document.getElementById('scanYear').value);
-        var m = Number(document.getElementById('scanMonth').value);
-        currentYM = clampYM(y, m);
-
-        saveStateSync('Saved · Photo Scan');
-        renderCalendar();
-        renderInspector();
-
-        setScanStatus(
-          'Applied to ' + statusDays + ' date(s) · ' + restDays + ' off day(s) in Red Neon' +
-          (applyCounts ? ' · staff counted on ' + counted + ' date(s)' : '')
-        );
-      }
-
-      /* ---------------------------------------------------------------
-         INIT: dropdowns
-      ---------------------------------------------------------------- */
+      // Initialize Month & Year dropdowns (2026–2028)
       var mSel = document.getElementById('monthSelect');
       MONTH_NAMES.forEach(function (name, idx) {
         var opt = document.createElement('option');
@@ -1568,34 +1013,12 @@
         ySel.appendChild(opt);
       }
 
-      // Scanner month/year pickers mirror the calendar range
-      var sMSel = document.getElementById('scanMonth');
-      MONTH_NAMES.forEach(function (name, idx) {
-        var o = document.createElement('option');
-        o.value = String(idx + 1);
-        o.textContent = name;
-        sMSel.appendChild(o);
-      });
-      var sYSel = document.getElementById('scanYear');
-      for (var yr2 = MIN_YEAR; yr2 <= MAX_YEAR; yr2++) {
-        var o2 = document.createElement('option');
-        o2.value = String(yr2);
-        o2.textContent = String(yr2);
-        sYSel.appendChild(o2);
-      }
-      sMSel.value = String(currentYM.month);
-      sYSel.value = String(currentYM.year);
-
       mSel.addEventListener('change', function () {
         currentYM = clampYM(currentYM.year, Number(mSel.value));
-        sMSel.value = String(currentYM.month);
-        sYSel.value = String(currentYM.year);
         renderCalendar();
       });
       ySel.addEventListener('change', function () {
         currentYM = clampYM(Number(ySel.value), currentYM.month);
-        sMSel.value = String(currentYM.month);
-        sYSel.value = String(currentYM.year);
         renderCalendar();
       });
       document.getElementById('prevBtn').addEventListener('click', function () {
@@ -1621,9 +1044,6 @@
         var prefix = currentYM.year + '-' + String(currentYM.month).padStart(2, '0');
         Object.keys(state.entries).forEach(function (k) {
           if (k.indexOf(prefix) === 0) delete state.entries[k];
-        });
-        Object.keys(state.scanned).forEach(function (k) {
-          if (k.indexOf(prefix) === 0) delete state.scanned[k];
         });
         saveStateSync('Saved · Reset');
         renderCalendar();
@@ -1657,10 +1077,6 @@
       document.getElementById('removePhotoBtn').addEventListener('click', function () {
         state.photoDataUrl = null;
         photoInput.value = '';
-        scanResults = null;
-        document.getElementById('scanResults').innerHTML = '';
-        document.getElementById('scanActions').style.display = 'none';
-        setScanStatus('Pick the month shown in the photo, then scan.');
         saveStateSync('Saved · Photo Removed');
         renderPhoto();
       });
@@ -1672,68 +1088,8 @@
           state.photoDataUrl = String(reader.result || '');
           saveStateSync('Saved · Photo');
           renderPhoto();
-          sMSel.value = String(currentYM.month);
-          sYSel.value = String(currentYM.year);
-          scanResults = null;
-          document.getElementById('scanResults').innerHTML = '';
-          document.getElementById('scanActions').style.display = 'none';
-          setScanStatus('Photo ready. Check the month/year, then press “Scan Photo for Off Days”.');
         };
         reader.readAsDataURL(file);
-      });
-
-      // Scan button
-      document.getElementById('scanPhotoBtn').addEventListener('click', function () {
-        var btn = this;
-        if (!state.photoDataUrl) {
-          setScanStatus('Upload a schedule photo first.');
-          return;
-        }
-        btn.disabled = true;
-        document.getElementById('scanActions').style.display = 'none';
-        document.getElementById('scanResults').innerHTML = '';
-        setScanStatus('Preparing image…');
-
-        preprocessImage(state.photoDataUrl)
-          .then(function (canvas) {
-            setScanStatus('Loading OCR engine…');
-            return loadOcrLib().then(function () { return canvas; });
-          })
-          .then(function (canvas) {
-            setScanStatus('Reading photo…');
-            return runOcr(canvas);
-          })
-          .then(function (words) {
-            var y = Number(sYSel.value);
-            var m = Number(sMSel.value);
-            scanResults = analyzeRoster(words, y, m);
-            renderScanResults(scanResults);
-
-            if (!scanResults.days.length) {
-              setScanStatus(scanResults.note || 'Nothing detected.');
-            } else {
-              var rests = scanResults.days.filter(function (d) { return d.rest; }).length;
-              var totalStaff = scanResults.days.reduce(function (s, d) { return s + d.staffCount; }, 0);
-              setScanStatus(
-                'Detected ' + scanResults.days.length + ' dated cell(s) · ' + rests +
-                ' off day(s) · ' + totalStaff + ' staff-day(s). Review below, then Apply.'
-              );
-            }
-          })
-          .catch(function (err) {
-            setScanStatus('Scan failed: ' + (err && err.message ? err.message : String(err)));
-          })
-          .then(function () {
-            btn.disabled = false;
-          });
-      });
-
-      document.getElementById('scanApplyBtn').addEventListener('click', applyScanResults);
-      document.getElementById('scanClearBtn').addEventListener('click', function () {
-        scanResults = null;
-        document.getElementById('scanResults').innerHTML = '';
-        document.getElementById('scanActions').style.display = 'none';
-        setScanStatus('Scan results dismissed.');
       });
 
       // Task Form
