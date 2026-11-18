@@ -8,763 +8,1134 @@
     :root {
       --bg-canvas: #f8fafc;
       --bg-surface: #ffffff;
-      --border: #e2e8f0;
+      --border-hairline: #cbd5e1;
       --text-main: #0f172a;
       --text-muted: #475569;
-      --lemon-bg: #d9f99d;
+      --weekday-bg: #ffedd5;
+      --weekday-border: #fdba74;
+      --weekday-text: #7c2d12;
+      --lemon-bg: #e2ff70;
       --lemon-border: #84cc16;
-      --lemon-text: #365314;
-      --rest-bg: #fee2e2;
-      --rest-border: #ef4444;
-      --rest-text: #991b1b;
+      --lemon-text: #27400b;
+      --rest-bg: #e60039;
+      --rest-border: #ff1744;
+      --rest-text: #ffffff;
+      --hd-bg: #bae6fd;
+      --hd-border: #38bdf8;
+      --hd-text: #0c4a6e;
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-canvas);
       color: var(--text-main);
       line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
     }
-
-    .topbar {
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 14px;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-    }
-
-    .topbar-inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .brand { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
 
     .container {
-      max-width: 1400px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 10px;
+      padding: 12px;
       display: grid;
-      grid-template-columns: 1fr 350px;
+      grid-template-columns: 1fr;
       gap: 16px;
-      align-items: start;
     }
 
-    @media (min-width: 640px) {
-      .container { padding: 20px; gap: 20px; }
-    }
-
-    @media (max-width: 1080px) {
-      .container { grid-template-columns: 1fr; }
+    @media (min-width: 1024px) {
+      .container {
+        grid-template-columns: 2fr 1fr;
+        align-items: start;
+        padding: 20px;
+      }
     }
 
     .card {
       background: var(--bg-surface);
-      border: 1px solid var(--border);
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
-      overflow: hidden;
+      overflow-x: clip;
     }
 
     .toolbar {
       padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .toolbar-row {
+    .toolbar-top {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 8px;
     }
 
-    .toolbar-controls {
+    .title-group {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
     }
 
-    .btn, select, input[type="text"], input[type="date"], input[type="number"] {
-      font: inherit;
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .save-status {
       font-size: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 7px 10px;
-      background: #fff;
-      color: var(--text-main);
+      font-weight: 600;
+      color: #27400b;
+    }
+
+    .nav-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    button, select, input {
+      font-family: inherit;
+      font-size: 12px;
     }
 
     .btn {
-      cursor: pointer;
-      font-weight: 600;
-      white-space: nowrap;
       min-height: 36px;
-    }
-
-    .btn:hover { background: #f1f5f9; }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-primary { background: #0f172a; color: #fff; border-color: #0f172a; }
-    .btn-primary:hover { background: #1e293b; }
-    .btn-danger { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-    .btn-danger:hover { background: #fee2e2; }
-
-    .nav-btn {
-      min-height: 38px;
-      padding: 7px 12px;
+      padding: 6px 12px;
+      border: 1px solid var(--border-hairline);
       background: #f1f5f9;
-      border-color: #cbd5e1;
+      color: var(--text-main);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
-    .save-badge {
-      font-size: 12px;
+    .btn:hover:not(:disabled) { background: #e2e8f0; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-dark { background: #0f172a; color: #fff; border-color: #0f172a; }
+    .btn-dark:hover:not(:disabled) { background: #1e293b; }
+    .btn-danger { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
+    .picker-group {
+      display: inline-flex;
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .picker-group select,
+    .picker-group button {
+      min-height: 36px;
+      border: 0;
+      background: transparent;
+      padding: 6px 8px;
       font-weight: 600;
-      color: #365314;
+      cursor: pointer;
+    }
+
+    .picker-group select + select,
+    .picker-group button {
+      border-left: 1px solid var(--border-hairline);
     }
 
     .legend {
-      padding: 8px 14px;
-      border-bottom: 1px solid var(--border);
-      background: #f8fafc;
-      font-size: 11px;
-      color: var(--text-muted);
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 6px 10px;
+      font-size: 11px;
+      color: var(--text-muted);
       align-items: center;
     }
 
     .swatch {
       display: inline-block;
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
       border-radius: 2px;
+      border: 1px solid;
       vertical-align: middle;
-      margin-right: 4px;
-      border: 1px solid transparent;
+      margin-right: 3px;
     }
 
-    .table-wrap { width: 100%; overflow-x: hidden; }
+    /* Frozen Light-Orange Weekday Header + Mobile-Friendly 7-Column Grid */
+    .table-wrap {
+      width: 100%;
+      overflow-x: clip;
+    }
 
-    table.calendar-grid {
+    table.roster-grid {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
       table-layout: fixed;
     }
 
-    table.calendar-grid thead th {
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      padding: 8px 2px;
-      font-size: 11px;
-      font-weight: 600;
+    table.roster-grid thead th {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--weekday-bg);
+      color: var(--weekday-text);
+      border-bottom: 1px solid var(--weekday-border);
+      border-right: 1px solid var(--weekday-border);
+      padding: 9px 4px;
       text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(124, 45, 18, 0.08);
     }
 
-    table.calendar-grid thead th:last-child,
-    table.calendar-grid tbody td:last-child { border-right: none; }
-
-    .sticky-col {
-      width: 66px;
-      background: #f8fafc;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
+    table.roster-grid thead th:last-child {
+      border-right: 0;
     }
 
-    table.calendar-grid tbody td {
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 3px;
+    table.roster-grid th.wk-col {
+      width: 58px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      font-size: 11px;
+      color: #475569;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    table.roster-grid thead th.wk-col {
+      background: var(--weekday-bg);
+      color: var(--weekday-text);
+      border-color: var(--weekday-border);
+    }
+
+    table.roster-grid td {
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      padding: 4px;
       vertical-align: top;
       background: #fff;
     }
 
+    table.roster-grid td:last-child { border-right: 0; }
+
     .day-cell {
-      min-height: 76px;
-      border-radius: 6px;
-      border: 1px solid var(--lemon-border);
-      background: var(--lemon-bg);
-      color: var(--lemon-text);
-      padding: 4px;
+      min-height: 92px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 6px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 3px;
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
       user-select: none;
+      -webkit-user-select: none;
+      transition: transform 0.12s ease, background-color 0.12s ease;
     }
 
-    @media (min-width: 640px) {
-      table.calendar-grid tbody td { padding: 6px; }
-      .day-cell { min-height: 108px; padding: 7px; border-radius: 8px; }
-    }
-
-    @media (max-width: 639px) {
-      .sticky-col { display: none; }
-    }
-
-    .day-cell.rest {
-      background: var(--rest-bg);
-      border-color: var(--rest-border);
-      color: var(--rest-text);
-    }
-
-    .day-cell.prestart {
-      background: #f8fafc;
-      border-color: #e2e8f0;
-      color: #94a3b8;
-    }
-
-    .day-cell.out-month { opacity: 0.6; }
-
-    .day-cell.today-mark {
+    .day-cell.holding {
+      transform: scale(0.97);
       outline: 2px solid #0f172a;
-      outline-offset: -2px;
     }
 
-    .cell-head {
+    .day-cell.out-month { opacity: 0.55; }
+    .day-cell.today-cell { box-shadow: inset 0 0 0 2px #0f172a; }
+
+    .cell-work {
+      background: var(--lemon-bg);
+      color: var(--lemon-text);
+      border-color: var(--lemon-border);
+    }
+
+    .cell-rest {
+      background: var(--rest-bg);
+      color: var(--rest-text);
+      border-color: var(--rest-border);
+      box-shadow: 0 0 10px rgba(255, 23, 68, 0.34);
+    }
+
+    .cell-hd {
+      background: var(--hd-bg);
+      color: var(--hd-text);
+      border-color: var(--hd-border);
+    }
+
+    .cell-prestart {
+      background: #f8fafc;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+    }
+
+    .cell-top {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 2px;
     }
 
-    .date-btn {
-      border: none;
-      background: transparent;
-      color: inherit;
+    .day-num {
       font-weight: 700;
-      font-size: 11px;
+      font-size: 12px;
       font-variant-numeric: tabular-nums;
+      background: transparent;
+      border: 0;
+      color: inherit;
       padding: 1px 3px;
-      border-radius: 3px;
       cursor: pointer;
     }
 
-    .today-tag {
-      background: #0f172a;
-      color: #fff;
-      font-size: 8px;
+    .tag {
+      font-size: 9px;
       font-weight: 700;
-      padding: 1px 3px;
-      border-radius: 2px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      line-height: 1.2;
+      color: #fff;
     }
 
-    .start-tag {
-      background: #365314;
-      color: #fff;
-      font-size: 8px;
+    .tag-today { background: #0f172a; }
+    .tag-start { background: #365314; }
+    .tag-hd { background: #0c4a6e; }
+
+    .cell-state {
+      font-size: 11px;
       font-weight: 700;
-      padding: 1px 3px;
-      border-radius: 2px;
+      margin: 2px 0;
     }
 
-    .shift-label { font-size: 10px; font-weight: 600; }
-
-    .holiday-mark {
-      background: rgba(255, 255, 255, 0.88);
+    .holiday-strip {
+      background: rgba(255, 255, 255, 0.92);
       color: #0f172a;
-      border: 1px solid rgba(15, 23, 42, 0.16);
-      border-radius: 2px;
-      padding: 1px 3px;
-      font-size: 8px;
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      border-radius: 3px;
+      padding: 2px 4px;
+      font-size: 9px;
       font-weight: 600;
-      white-space: nowrap;
+      margin-top: 2px;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .staff-pill {
-      width: 100%;
+    .staff-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: rgba(255, 255, 255, 0.88);
       color: #0f172a;
-      border: 1px solid rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(15, 23, 42, 0.12);
       border-radius: 4px;
-      padding: 2px;
+      padding: 2px 4px;
       font-size: 10px;
-      font-variant-numeric: tabular-nums;
       font-weight: 600;
-      text-align: center;
-      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      margin-top: 4px;
     }
+
+    .staff-btn {
+      width: 18px;
+      height: 18px;
+      border: 0;
+      background: transparent;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .staff-btn:hover { background: rgba(15, 23, 42, 0.1); }
 
     .inspector {
       padding: 12px 14px;
       background: #f1f5f9;
-      border-top: 1px solid var(--border);
-      display: flex;
+      border-top: 1px solid #e2e8f0;
+      display: none;
       flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 10px;
     }
 
-    .section-pad { padding: 14px; }
+    .inspector.open { display: flex; }
 
-    .scanner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 720px) {
-      .scanner-grid { grid-template-columns: 1fr; }
-    }
-
-    .dropzone {
-      border: 1px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 14px;
-      text-align: center;
+    .footer-bar {
+      padding: 10px 14px;
       background: #f8fafc;
-      cursor: pointer;
-      min-height: 140px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 11px;
+      color: var(--text-muted);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
       gap: 8px;
     }
 
-    .dropzone img {
-      max-height: 120px;
+    .panel-pad { padding: 14px; }
+    .panel-pad h2 { margin: 0 0 8px; font-size: 16px; }
+
+    .photo-box {
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    .photo-box img {
       max-width: 100%;
-      border-radius: 6px;
-      border: 1px solid var(--border);
+      max-height: 180px;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
 
     .task-form {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      background: #f8fafc;
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .task-form input, .task-form select {
+      padding: 7px 9px;
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .task-row-inputs {
-      display: grid;
-      grid-template-columns: 1fr 82px 1fr;
-      gap: 6px;
-    }
-
-    .task-list { max-height: 460px; overflow-y: auto; }
-
     .task-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: flex-start;
+      justify-content: space-between;
+      align-items: center;
       gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
     }
 
-    .task-item.done .task-title { text-decoration: line-through; color: #94a3b8; }
-    .task-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .task-item.done span { text-decoration: line-through; color: #94a3b8; }
+
+    /* Mobile Fit: Keep all 7 Sun–Sat columns visible without horizontal scrolling */
+    @media (max-width: 640px) {
+      .container { padding: 8px; }
+      table.roster-grid th.wk-col { display: none; }
+      table.roster-grid td { padding: 2px; }
+      .day-cell { min-height: 74px; padding: 4px 3px; border-radius: 5px; }
+      .day-num { font-size: 11px; padding: 0; }
+      .tag { font-size: 7px; padding: 1px 2px; }
+      .cell-state { font-size: 10px; }
+      .holiday-strip { font-size: 8px; padding: 1px 2px; }
+      .staff-bar { font-size: 9px; justify-content: center; padding: 1px 2px; }
+      .staff-btn { display: none; }
+    }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">RosterSync — Work Calendar &amp; Tasks</div>
-      <div class="toolbar-controls">
-        <button type="button" class="btn" id="exportDataBtn">Export JSON</button>
-        <button type="button" class="btn" id="importDataBtn">Import JSON</button>
-        <input type="file" id="importJsonInput" accept="application/json" hidden />
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
-      <!-- Calendar Card -->
-      <section class="card">
-        <div class="toolbar">
-          <div class="toolbar-row">
-            <div class="toolbar-controls">
-              <strong id="monthHeading" style="font-size:17px;">November 2026</strong>
-              <span id="saveBadge" class="save-badge"></span>
-            </div>
-            <div class="toolbar-controls">
-              <button type="button" class="btn" id="resetMonthBtn">Reset</button>
-              <button type="button" class="btn btn-primary" id="uploadPhotoTopBtn">Upload Photo</button>
-            </div>
+  <div class="container">
+    <!-- Work Calendar Section -->
+    <section class="card" aria-label="Work Calendar">
+      <div class="toolbar">
+        <div class="toolbar-top">
+          <div class="title-group">
+            <h1 id="monthTitle">November 2026</h1>
+            <span class="save-status" id="saveStatus">Auto-save ready</span>
           </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn" id="resetMonthBtn">Reset</button>
+            <button type="button" class="btn btn-dark" id="jumpStartBtn">Oct 27, 2026 Start</button>
+          </div>
+        </div>
 
-          <div class="toolbar-row">
-            <div class="toolbar-controls" style="flex:1;">
-              <button type="button" class="btn nav-btn" id="prevMonthBtn">&lsaquo; Prev</button>
-              <select id="monthSelect" aria-label="Select month"></select>
-              <select id="yearSelect" aria-label="Select year"></select>
-              <button type="button" class="btn" id="todayBtn">Today</button>
-              <button type="button" class="btn nav-btn" id="nextMonthBtn">Next &rsaquo;</button>
+        <div class="nav-row">
+          <div class="nav-controls">
+            <button type="button" class="btn" id="prevBtn">&#8249; Prev</button>
+            <div class="picker-group">
+              <select id="monthSelect" aria-label="Month"></select>
+              <select id="yearSelect" aria-label="Year"></select>
+              <button type="button" id="todayBtn">Today</button>
             </div>
-            <button type="button" class="btn" id="jumpStartBtn" style="font-size:11px;">
-              Oct 27, 2026 Start
-            </button>
+            <button type="button" class="btn" id="nextBtn">Next &#8250;</button>
           </div>
         </div>
 
         <div class="legend">
-          <span><span class="swatch" style="background:#d9f99d; border-color:#84cc16;"></span>2× tap: Yellow Green (from Oct 27)</span>
-          <span><span class="swatch" style="background:#fee2e2; border-color:#ef4444;"></span>1× tap: Red (Rest)</span>
-          <span><strong>★ TODAY</strong> = Current Date</span>
-          <span><strong>⚑</strong> = Scottish Bank Holiday</span>
-        </div>
-
-        <div class="table-wrap">
-          <table class="calendar-grid">
-            <thead>
-              <tr>
-                <th class="sticky-col">Shift</th>
-                <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-              </tr>
-            </thead>
-            <tbody id="calendarBody"></tbody>
-          </table>
-        </div>
-
-        <div id="dayInspector" class="inspector" style="display:none;"></div>
-      </section>
-
-      <!-- Photo Upload & Remove + Askal Matcher -->
-      <section class="card section-pad">
-        <div class="toolbar-row">
-          <strong style="font-size:14px;">Schedule Photo Upload &amp; Askal Matcher</strong>
-          <div class="toolbar-controls">
-            <button type="button" class="btn btn-danger" id="removePhotoBtn" style="display:none;">Remove Photo</button>
-            <button type="button" class="btn" id="selectPhotoBtn">Select Photo</button>
-          </div>
-        </div>
-        <input type="file" id="photoInput" accept="image/*" hidden />
-
-        <div class="scanner-grid">
-          <div class="dropzone" id="photoDropzone">
-            <span style="font-size:13px; font-weight:600;">Tap or drop schedule photo</span>
-            <span style="font-size:11px; color:var(--text-muted);">JPG, PNG, WEBP</span>
-          </div>
-
-          <div style="border:1px solid var(--border); border-radius:10px; padding:12px; background:#f8fafc; display:flex; flex-direction:column; gap:8px;">
-            <input type="text" id="askalDatesInput" placeholder="Askal Rest Dates (e.g. 2026-11-18, 2026-11-22)" />
-            <div style="display:flex; gap:8px;">
-              <input type="number" id="defaultStaffInput" min="0" max="500" value="4" style="width:90px;" title="Staff count for active dates" />
-              <button type="button" class="btn btn-primary" id="applyAskalBtn" style="flex:1;">Apply Askal Rest &amp; Staff</button>
-            </div>
-            <div id="scanStatus" style="font-size:11px; color:var(--text-muted);">
-              Enter Askal's off dates from the uploaded photo to mark them Red (Rest).
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Task Management Dashboard -->
-    <aside class="card">
-      <div class="toolbar">
-        <div class="toolbar-row">
-          <div>
-            <strong style="font-size:15px;">Task Dashboard</strong>
-            <div id="taskSummary" style="font-size:11px; color:var(--text-muted);">0 open · 0 completed</div>
-          </div>
-          <button type="button" class="btn" id="clearTaskDateFilterBtn" style="display:none;">All Dates</button>
+          <strong style="color:#0f172a;">Press &amp; hold cell to cycle (or click):</strong>
+          <span><span class="swatch" style="background:#e60039;border-color:#ff1744;"></span>1&times; Red Neon (Rest)</span>
+          <span>&middot;</span>
+          <span><span class="swatch" style="background:#e2ff70;border-color:#84cc16;"></span>2&times; Lemon (Day)</span>
+          <span>&middot;</span>
+          <span><span class="swatch" style="background:#bae6fd;border-color:#38bdf8;"></span>3&times; Water Blue (HD)</span>
+          <span>&middot;</span>
+          <span>&#9733; Today</span>
+          <span>&middot;</span>
+          <span>&#9873; Scottish Bank Holiday</span>
         </div>
       </div>
 
-      <div class="task-form">
-        <input type="text" id="taskSearch" placeholder="Search tasks..." />
-        <form id="addTaskForm" style="display:flex; flex-direction:column; gap:8px;">
-          <input type="text" id="taskTitle" placeholder="New task title..." required />
-          <div class="task-row-inputs">
+      <div class="table-wrap">
+        <table class="roster-grid">
+          <thead>
+            <tr>
+              <th class="wk-col">Shift<br><small>Sun&ndash;Sat</small></th>
+              <th>Sun</th>
+              <th>Mon</th>
+              <th>Tue</th>
+              <th>Wed</th>
+              <th>Thu</th>
+              <th>Fri</th>
+              <th>Sat</th>
+            </tr>
+          </thead>
+          <tbody id="calendarBody"></tbody>
+        </table>
+      </div>
+
+      <div class="inspector" id="dateInspector">
+        <div>
+          <strong id="inspectorDate"></strong>
+          <div id="inspectorHoliday" style="font-size:11px; color:#3730a3;"></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+          <button type="button" class="btn cell-rest" data-set-status="rest">Rest</button>
+          <button type="button" class="btn cell-work" data-set-status="work">Day</button>
+          <button type="button" class="btn cell-hd" data-set-status="hd">HD</button>
+          <button type="button" class="btn" id="inspMinus">-</button>
+          <span id="inspStaffCount" style="font-size:12px; font-weight:700;">0 staff</span>
+          <button type="button" class="btn" id="inspPlus">+</button>
+          <button type="button" class="btn" id="closeInspector">Close</button>
+        </div>
+      </div>
+
+      <div class="footer-bar">
+        <span id="holidayFooter"></span>
+        <span>Work starts Oct 27, 2026 &middot; Calendar through 2028 &middot; Always saves before exit</span>
+      </div>
+    </section>
+
+    <!-- Photo Preview & Task Dashboard -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <section class="card panel-pad" aria-label="Schedule Photo">
+        <h2>Schedule Photo</h2>
+        <div class="photo-box">
+          <input type="file" id="photoInput" accept="image/*" style="display:none;" />
+          <div id="photoPreviewWrap" style="display:none;">
+            <img id="photoPreviewImg" alt="Uploaded schedule preview" />
+            <div style="display:flex; justify-content:center; gap:8px;">
+              <button type="button" class="btn" id="replacePhotoBtn">Upload Another</button>
+              <button type="button" class="btn btn-danger" id="removePhotoBtn">Remove Photo</button>
+            </div>
+          </div>
+          <div id="photoEmptyWrap">
+            <button type="button" class="btn btn-dark" id="uploadPhotoBtn">Upload Schedule Photo</button>
+            <div style="font-size:11px; color:#64748b; margin-top:6px;">
+              Attach your roster photo for quick reference alongside Askal's rest days &amp; staff counts.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card panel-pad" aria-label="Task Management Dashboard">
+        <h2>Task Dashboard</h2>
+        <form class="task-form" id="taskForm">
+          <input type="text" id="taskTitle" placeholder="New task title..." required maxlength="160" />
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             <input type="date" id="taskDate" min="2026-01-01" max="2028-12-31" />
             <select id="taskPriority">
               <option value="low">Low</option>
               <option value="medium" selected>Medium</option>
               <option value="high">High</option>
             </select>
-            <input type="text" id="taskAssignee" placeholder="Assignee" />
           </div>
-          <button type="submit" class="btn btn-primary">Add Task</button>
+          <button type="submit" class="btn btn-dark">Add Task</button>
         </form>
-      </div>
-      <div class="task-list" id="taskList"></div>
-    </aside>
-  </main>
+        <ul class="task-list" id="taskList"></ul>
+      </section>
+    </div>
+  </div>
 
   <script>
-    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const WORK_START_DATE = '2026-10-27';
+    (function () {
+      var STORAGE_KEY = 'rostersync_standalone_v3';
+      var WORK_START_DATE = '2026-10-27';
+      var MIN_YEAR = 2026;
+      var MAX_YEAR = 2028;
+      var HOLD_CYCLE = ['rest', 'work', 'hd'];
 
-    const SCOTTISH_HOLIDAYS = {
-      '2026-01-01':"New Year's Day",'2026-01-02':'2nd January','2026-04-03':'Good Friday',
-      '2026-05-04':'Early May','2026-05-25':'Spring Bank','2026-08-03':'Summer Bank',
-      '2026-11-30':"St Andrew's Day",'2026-12-25':'Christmas Day','2026-12-28':'Boxing Day (Sub)',
-      '2027-01-01':"New Year's Day",'2027-01-04':'2nd Jan (Sub)','2027-03-26':'Good Friday',
-      '2027-05-03':'Early May','2027-05-31':'Spring Bank','2027-08-02':'Summer Bank',
-      '2027-11-30':"St Andrew's Day",'2027-12-27':'Christmas (Sub)','2027-12-28':'Boxing Day (Sub)',
-      '2028-01-03':"New Year (Sub)",'2028-01-04':'2nd Jan (Sub)','2028-04-14':'Good Friday',
-      '2028-05-01':'Early May','2028-05-29':'Spring Bank','2028-08-07':'Summer Bank',
-      '2028-11-30':"St Andrew's Day",'2028-12-25':'Christmas Day','2028-12-26':'Boxing Day'
-    };
+      var MONTH_NAMES = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
 
-    const STORAGE_KEY = 'rostersync_standalone_v2';
-    let state = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { entries:{}, tasks:[] }; } catch { return { entries:{}, tasks:[] }; } })();
-    const now = new Date();
-    let currentYear = Math.min(2028, Math.max(2026, now.getFullYear()));
-    let currentMonth = now.getMonth() + 1;
-    let selectedDate = null;
-    let saveTimer = null;
-    const tapTimers = {}, lastTapTimes = {};
-
-    const formatIso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    const saveState = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-
-    function flashSaved(msg) {
-      const badge = document.getElementById('saveBadge');
-      badge.textContent = '✓ ' + msg;
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => { badge.textContent = ''; }, 2400);
-    }
-
-    function getVisualStatus(iso) {
-      if (state.entries[iso]) return state.entries[iso].status;
-      return iso >= WORK_START_DATE ? 'work' : 'prestart';
-    }
-
-    function getEntry(iso) {
-      return state.entries[iso] || { status: iso >= WORK_START_DATE ? 'work' : 'prestart', staff: 0, note: '' };
-    }
-
-    function setEntry(iso, patch, notice) {
-      const prev = getEntry(iso);
-      const nextStatus = patch.status || (prev.status === 'prestart' ? 'work' : prev.status);
-      state.entries[iso] = { ...prev, ...patch, status: nextStatus };
-      saveState();
-      renderCalendar();
-      if (notice) flashSaved(notice);
-    }
-
-    function populateSelectors() {
-      document.getElementById('monthSelect').innerHTML = MONTH_NAMES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
-      document.getElementById('yearSelect').innerHTML = [2026,2027,2028].map(y=>`<option value="${y}">${y}</option>`).join('');
-    }
-
-    function renderInspector() {
-      const el = document.getElementById('dayInspector');
-      if (!selectedDate) { el.style.display = 'none'; return; }
-      const entry = getEntry(selectedDate);
-      const hol = SCOTTISH_HOLIDAYS[selectedDate];
-      el.style.display = 'flex';
-      el.innerHTML = `
-        <div>
-          <strong style="font-size:12px;">${selectedDate}</strong>
-          ${selectedDate === WORK_START_DATE ? '<span style="font-size:11px; color:#365314; font-weight:600; margin-left:6px;">· Work Start</span>' : ''}
-          ${hol ? `<span style="font-size:11px; color:#3730a3; margin-left:6px;">⚑ ${hol}</span>` : ''}
-        </div>
-        <div class="toolbar-controls">
-          <button type="button" class="btn" id="insWorkBtn" style="background:${entry.status==='work'?'#d9f99d':'#fff'};">Shift On</button>
-          <button type="button" class="btn" id="insRestBtn" style="background:${entry.status==='rest'?'#fee2e2':'#fff'};">Rest</button>
-          <button type="button" class="btn" id="insDecStaff">−</button>
-          <span style="font-size:12px; font-weight:600; min-width:52px; text-align:center;">${entry.staff} staff</span>
-          <button type="button" class="btn" id="insIncStaff">+</button>
-          <button type="button" class="btn" id="insClose">✕</button>
-        </div>`;
-      el.querySelector('#insWorkBtn').onclick = () => setEntry(selectedDate, { status:'work' }, 'Saved · Shift On');
-      el.querySelector('#insRestBtn').onclick = () => setEntry(selectedDate, { status:'rest' }, 'Saved · Rest');
-      el.querySelector('#insDecStaff').onclick = () => setEntry(selectedDate, { staff: Math.max(0, entry.staff - 1) }, 'Saved');
-      el.querySelector('#insIncStaff').onclick = () => setEntry(selectedDate, { staff: Math.min(500, entry.staff + 1) }, 'Saved');
-      el.querySelector('#insClose').onclick = () => { selectedDate = null; renderCalendar(); renderTasks(); };
-    }
-
-    function renderCalendar() {
-      document.getElementById('monthHeading').textContent = `${MONTH_NAMES[currentMonth-1]} ${currentYear}`;
-      document.getElementById('monthSelect').value = String(currentMonth);
-      document.getElementById('yearSelect').value = String(currentYear);
-      document.getElementById('prevMonthBtn').disabled = (currentYear === 2026 && currentMonth === 1);
-      document.getElementById('nextMonthBtn').disabled = (currentYear === 2028 && currentMonth === 12);
-
-      const todayIso = formatIso(new Date());
-      const first = new Date(currentYear, currentMonth-1, 1);
-      const start = new Date(currentYear, currentMonth-1, 1 - first.getDay());
-      const tbody = document.getElementById('calendarBody');
-      tbody.innerHTML = '';
-
-      for (let w=0; w<6; w++) {
-        const tr = document.createElement('tr');
-        const th = document.createElement('th');
-        th.className = 'sticky-col';
-        th.textContent = `Row ${w+1}`;
-        tr.appendChild(th);
-
-        for (let d=0; d<7; d++) {
-          const dt = new Date(start.getFullYear(), start.getMonth(), start.getDate()+w*7+d);
-          const iso = formatIso(dt);
-          const inM = dt.getFullYear()===currentYear && dt.getMonth()===currentMonth-1;
-          const isToday = iso === todayIso;
-          const isStart = iso === WORK_START_DATE;
-          const hol = SCOTTISH_HOLIDAYS[iso] || '';
-          const vStatus = getVisualStatus(iso);
-          const entry = getEntry(iso);
-
-          const td = document.createElement('td');
-          const box = document.createElement('div');
-          box.className = `day-cell ${vStatus==='rest'?'rest':vStatus==='prestart'?'prestart':''} ${inM?'':'out-month'} ${isToday?'today-mark':''}`;
-          box.innerHTML = `
-            <div class="cell-head">
-              <button type="button" class="date-btn">${dt.getDate()}</button>
-              ${isToday ? '<span class="today-tag">★ TODAY</span>' : isStart ? '<span class="start-tag">START</span>' : ''}
-            </div>
-            <div>
-              <div class="shift-label">${vStatus==='rest'?'Rest':vStatus==='prestart'?'—':'On'}</div>
-              ${hol ? `<div class="holiday-mark" title="${hol}">⚑ ${hol}</div>` : ''}
-            </div>
-            <button type="button" class="staff-pill">${entry.staff}p</button>`;
-
-          const selectThisDate = e => {
-            e.stopPropagation();
-            selectedDate = selectedDate === iso ? null : iso;
-            document.getElementById('taskDate').value = selectedDate || '';
-            renderCalendar();
-            renderTasks();
-          };
-          box.querySelector('.date-btn').addEventListener('pointerup', e => e.stopPropagation());
-          box.querySelector('.date-btn').addEventListener('click', selectThisDate);
-          box.querySelector('.staff-pill').addEventListener('pointerup', e => e.stopPropagation());
-          box.querySelector('.staff-pill').addEventListener('click', selectThisDate);
-
-          box.addEventListener('pointerup', e => {
-            if (e.pointerType==='mouse' && e.button!==0) return;
-            if (e.target.closest('.staff-pill') || e.target.closest('.date-btn')) return;
-            const t = Date.now(), prev = lastTapTimes[iso] || 0;
-            if (t - prev < 270) {
-              clearTimeout(tapTimers[iso]); lastTapTimes[iso] = 0;
-              setEntry(iso, { status:'work' }, 'Saved · Shift On');
-            } else {
-              lastTapTimes[iso] = t;
-              clearTimeout(tapTimers[iso]);
-              tapTimers[iso] = setTimeout(() => setEntry(iso, { status:'rest' }, 'Saved · Rest'), 270);
-            }
-          });
-          td.appendChild(box);
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-      }
-      renderInspector();
-    }
-
-    function renderTasks() {
-      const q = document.getElementById('taskSearch').value.trim().toLowerCase();
-      const listEl = document.getElementById('taskList');
-      document.getElementById('clearTaskDateFilterBtn').style.display = selectedDate ? 'inline-block' : 'none';
-      const filtered = state.tasks.filter(t => (!selectedDate || t.date===selectedDate) && (!q || (t.title+' '+t.assignee+' '+t.date).toLowerCase().includes(q)));
-      const open = state.tasks.filter(t => !t.completed).length;
-      document.getElementById('taskSummary').textContent = `${open} open · ${state.tasks.length - open} completed`;
-      listEl.innerHTML = filtered.length ? '' : '<div style="padding:20px; text-align:center; font-size:12px; color:#64748b;">No matching tasks.</div>';
-      filtered.forEach(task => {
-        const div = document.createElement('div');
-        div.className = `task-item ${task.completed?'done':''}`;
-        div.innerHTML = `
-          <input type="checkbox" ${task.completed?'checked':''} style="margin-top:3px;" />
-          <div style="flex:1; min-width:0;">
-            <div class="task-title" style="font-size:13px; font-weight:600;">${task.title}</div>
-            <div class="task-meta">${task.date||'General'} · ${task.priority}${task.assignee?' · '+task.assignee:''}</div>
-          </div>
-          <button type="button" class="btn" style="padding:2px 7px; font-size:11px; min-height:26px;">✕</button>`;
-        div.querySelector('input').onchange = () => { task.completed = !task.completed; saveState(); renderTasks(); };
-        div.querySelector('button').onclick = () => { state.tasks = state.tasks.filter(x=>x.id!==task.id); saveState(); renderTasks(); };
-        listEl.appendChild(div);
-      });
-    }
-
-    document.getElementById('prevMonthBtn').onclick = () => { if (!(currentYear===2026 && currentMonth===1)) { currentMonth--; if (currentMonth<1){currentMonth=12;currentYear--;} renderCalendar(); }};
-    document.getElementById('nextMonthBtn').onclick = () => { if (!(currentYear===2028 && currentMonth===12)) { currentMonth++; if (currentMonth>12){currentMonth=1;currentYear++;} renderCalendar(); }};
-    document.getElementById('todayBtn').onclick = () => { const d=new Date(); currentYear=Math.min(2028,Math.max(2026,d.getFullYear())); currentMonth=d.getMonth()+1; renderCalendar(); };
-    document.getElementById('jumpStartBtn').onclick = () => { currentYear = 2026; currentMonth = 10; renderCalendar(); };
-    document.getElementById('monthSelect').onchange = e => { currentMonth = Number(e.target.value); renderCalendar(); };
-    document.getElementById('yearSelect').onchange = e => { currentYear = Number(e.target.value); renderCalendar(); };
-    document.getElementById('resetMonthBtn').onclick = () => { const p=`${currentYear}-${String(currentMonth).padStart(2,'0')}`; Object.keys(state.entries).forEach(k=>{if(k.startsWith(p)) delete state.entries[k];}); saveState(); renderCalendar(); flashSaved('Saved · Reset'); };
-    document.getElementById('clearTaskDateFilterBtn').onclick = () => { selectedDate = null; renderCalendar(); renderTasks(); };
-    document.getElementById('taskSearch').oninput = renderTasks;
-    document.getElementById('addTaskForm').onsubmit = e => {
-      e.preventDefault();
-      const title = document.getElementById('taskTitle').value.trim();
-      if (!title) return;
-      state.tasks.unshift({ id:'t_'+Date.now(), title, date:document.getElementById('taskDate').value||'', priority:document.getElementById('taskPriority').value, assignee:document.getElementById('taskAssignee').value.trim(), completed:false });
-      document.getElementById('taskTitle').value=''; document.getElementById('taskAssignee').value='';
-      saveState(); renderTasks();
-    };
-
-    const photoInput = document.getElementById('photoInput');
-    const dropzone = document.getElementById('photoDropzone');
-    const removePhotoBtn = document.getElementById('removePhotoBtn');
-    const selectPhotoBtn = document.getElementById('selectPhotoBtn');
-
-    document.getElementById('uploadPhotoTopBtn').onclick = () => photoInput.click();
-    selectPhotoBtn.onclick = () => photoInput.click();
-    dropzone.onclick = () => photoInput.click();
-
-    function resetPhotoPreview() {
-      photoInput.value = '';
-      dropzone.innerHTML = '<span style="font-size:13px; font-weight:600;">Tap or drop schedule photo</span><span style="font-size:11px; color:var(--text-muted);">JPG, PNG, WEBP</span>';
-      removePhotoBtn.style.display = 'none';
-      selectPhotoBtn.textContent = 'Select Photo';
-    }
-
-    removePhotoBtn.onclick = () => resetPhotoPreview();
-
-    function showPhoto(f) {
-      if (!f || !f.type.startsWith('image/')) return;
-      const r = new FileReader();
-      r.onload = () => {
-        dropzone.innerHTML = `<img src="${r.result}" alt="Schedule"/><span style="font-size:11px;">${f.name}</span>`;
-        removePhotoBtn.style.display = 'inline-block';
-        selectPhotoBtn.textContent = 'Upload Another';
+      var SCOTTISH_HOLIDAYS = {
+        '2026-01-01': "New Year's Day",
+        '2026-01-02': '2nd January',
+        '2026-04-03': 'Good Friday',
+        '2026-05-04': 'Early May Bank Holiday',
+        '2026-05-25': 'Spring Bank Holiday',
+        '2026-08-03': 'Summer Bank Holiday',
+        '2026-11-30': "St Andrew's Day",
+        '2026-12-25': 'Christmas Day',
+        '2026-12-28': 'Boxing Day (Sub)',
+        '2027-01-01': "New Year's Day",
+        '2027-01-04': '2nd January (Sub)',
+        '2027-03-26': 'Good Friday',
+        '2027-05-03': 'Early May Bank Holiday',
+        '2027-05-31': 'Spring Bank Holiday',
+        '2027-08-02': 'Summer Bank Holiday',
+        '2027-11-30': "St Andrew's Day",
+        '2027-12-27': 'Christmas Day (Sub)',
+        '2027-12-28': 'Boxing Day (Sub)',
+        '2028-01-03': "New Year's Day (Sub)",
+        '2028-01-04': '2nd January (Sub)',
+        '2028-04-14': 'Good Friday',
+        '2028-05-01': 'Early May Bank Holiday',
+        '2028-05-29': 'Spring Bank Holiday',
+        '2028-08-07': 'Summer Bank Holiday',
+        '2028-11-30': "St Andrew's Day",
+        '2028-12-25': 'Christmas Day',
+        '2028-12-26': 'Boxing Day'
       };
-      r.readAsDataURL(f);
-    }
 
-    photoInput.onchange = e => showPhoto(e.target.files[0]);
-    dropzone.ondragover = e => e.preventDefault();
-    dropzone.ondrop = e => { e.preventDefault(); showPhoto(e.dataTransfer.files[0]); };
-
-    document.getElementById('applyAskalBtn').onclick = () => {
-      const restDates = document.getElementById('askalDatesInput').value.split(',').map(s=>s.trim()).filter(s=>/^\d{4}-\d{2}-\d{2}$/.test(s));
-      const staff = Math.max(0, Math.min(500, Number(document.getElementById('defaultStaffInput').value)||0));
-      const p = `${currentYear}-${String(currentMonth).padStart(2,'0')}`, days = new Date(currentYear, currentMonth, 0).getDate();
-      for (let d=1; d<=days; d++) {
-        const iso = `${p}-${String(d).padStart(2,'0')}`;
-        if (iso < WORK_START_DATE && !restDates.includes(iso)) continue;
-        const isRest = restDates.includes(iso);
-        state.entries[iso] = { status:isRest?'rest':'work', staff:isRest?0:staff, note:isRest?'Askal: Rest':'' };
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return { entries: {}, tasks: [], photoDataUrl: null };
       }
-      saveState(); renderCalendar(); flashSaved('Saved');
-      document.getElementById('scanStatus').textContent = `Applied ${restDates.length} Askal rest date(s) & ${staff} staff.`;
-    };
 
-    document.getElementById('exportDataBtn').onclick = () => { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); a.download='rostersync-backup.json'; a.click(); };
-    document.getElementById('importDataBtn').onclick = () => document.getElementById('importJsonInput').click();
-    document.getElementById('importJsonInput').onchange = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ try{const p=JSON.parse(String(r.result)); state={entries:p.entries||{},tasks:p.tasks||[]}; saveState(); renderCalendar(); renderTasks();}catch{} }; r.readAsText(f); };
+      var state = loadState();
+      if (!state.entries) state.entries = {};
+      if (!state.tasks) state.tasks = [];
 
-    populateSelectors(); renderCalendar(); renderTasks();
+      function saveStateSync(noticeText) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+        if (noticeText) {
+          document.getElementById('saveStatus').textContent = noticeText;
+        }
+      }
+
+      function formatIso(d) {
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      }
+
+      function clampYM(y, m) {
+        if (y < MIN_YEAR) return { year: MIN_YEAR, month: 1 };
+        if (y > MAX_YEAR) return { year: MAX_YEAR, month: 12 };
+        return { year: y, month: Math.min(12, Math.max(1, m)) };
+      }
+
+      var now = new Date();
+      var currentYM = clampYM(now.getFullYear(), now.getMonth() + 1);
+      var selectedDate = null;
+
+      var tapCounts = {};
+      var tapTimers = {};
+      var pendingCommits = {};
+      var holdTimers = {};
+      var holdIntervals = {};
+      var holdFired = {};
+      var startPos = {};
+      var moved = {};
+
+      function clearHold(iso) {
+        if (holdTimers[iso]) { clearTimeout(holdTimers[iso]); delete holdTimers[iso]; }
+        if (holdIntervals[iso]) { clearInterval(holdIntervals[iso]); delete holdIntervals[iso]; }
+      }
+
+      function nextHoldStatus(curr) {
+        var idx = HOLD_CYCLE.indexOf(curr);
+        if (idx === -1) return 'rest';
+        return HOLD_CYCLE[(idx + 1) % HOLD_CYCLE.length];
+      }
+
+      function getVisualState(iso) {
+        var entry = state.entries[iso];
+        if (entry && entry.status) return entry.status;
+        return iso >= WORK_START_DATE ? 'work' : 'prestart';
+      }
+
+      function setDayStatus(iso, nextStatus) {
+        var prev = state.entries[iso] || { count: 0 };
+        state.entries[iso] = { status: nextStatus, count: prev.count || 0 };
+        var label = nextStatus === 'rest' ? 'Saved · Rest' : nextStatus === 'hd' ? 'Saved · HD' : 'Saved · Day';
+        saveStateSync(label);
+        renderCalendar();
+        if (selectedDate === iso) renderInspector();
+      }
+
+      function setStaffCount(iso, nextCount) {
+        var prev = state.entries[iso];
+        var status = prev && prev.status ? prev.status : (iso >= WORK_START_DATE ? 'work' : 'rest');
+        state.entries[iso] = { status: status, count: Math.max(0, Math.min(500, nextCount)) };
+        saveStateSync('Saved · Staff');
+        renderCalendar();
+        if (selectedDate === iso) renderInspector();
+      }
+
+      function renderCalendar() {
+        var y = currentYM.year;
+        var m = currentYM.month;
+        document.getElementById('monthTitle').textContent = MONTH_NAMES[m - 1] + ' ' + y;
+        document.getElementById('monthSelect').value = String(m);
+        document.getElementById('yearSelect').value = String(y);
+        document.getElementById('prevBtn').disabled = (y === MIN_YEAR && m === 1);
+        document.getElementById('nextBtn').disabled = (y === MAX_YEAR && m === 12);
+
+        var todayIso = formatIso(new Date());
+        var first = new Date(y, m - 1, 1);
+        var gridStart = new Date(y, m - 1, 1 - first.getDay());
+        var tbody = document.getElementById('calendarBody');
+        tbody.innerHTML = '';
+
+        var monthHolidays = [];
+
+        for (var wk = 0; wk < 6; wk++) {
+          var tr = document.createElement('tr');
+          var wkTh = document.createElement('th');
+          wkTh.className = 'wk-col';
+          wkTh.innerHTML = 'Shift<br>Row ' + (wk + 1);
+          tr.appendChild(wkTh);
+
+          for (var dow = 0; dow < 7; dow++) {
+            var d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + wk * 7 + dow);
+            var iso = formatIso(d);
+            var inMonth = (d.getFullYear() === y && d.getMonth() === m - 1);
+            var isToday = iso === todayIso;
+            var holiday = SCOTTISH_HOLIDAYS[iso] || null;
+            if (inMonth && holiday) {
+              monthHolidays.push(d.getDate() + ' ' + MONTH_NAMES[m - 1].slice(0, 3) + ' (' + holiday + ')');
+            }
+
+            var visual = getVisualState(iso);
+            var count = (state.entries[iso] && state.entries[iso].count) || 0;
+
+            var td = document.createElement('td');
+            var cell = document.createElement('div');
+            cell.className = 'day-cell ' +
+              (visual === 'rest' ? 'cell-rest' : visual === 'hd' ? 'cell-hd' : visual === 'prestart' ? 'cell-prestart' : 'cell-work') +
+              (inMonth ? '' : ' out-month') +
+              (isToday ? ' today-cell' : '');
+
+            var top = document.createElement('div');
+            top.className = 'cell-top';
+
+            var numBtn = document.createElement('button');
+            numBtn.type = 'button';
+            numBtn.className = 'day-num';
+            numBtn.textContent = String(d.getDate());
+            numBtn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+            numBtn.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+            numBtn.addEventListener('click', (function (targetIso) {
+              return function (e) {
+                e.stopPropagation();
+                selectedDate = (selectedDate === targetIso ? null : targetIso);
+                renderInspector();
+              };
+            })(iso));
+            top.appendChild(numBtn);
+
+            if (isToday) {
+              var tSpan = document.createElement('span');
+              tSpan.className = 'tag tag-today';
+              tSpan.textContent = 'TODAY';
+              top.appendChild(tSpan);
+            } else if (iso === WORK_START_DATE) {
+              var sSpan = document.createElement('span');
+              sSpan.className = 'tag tag-start';
+              sSpan.textContent = 'START';
+              top.appendChild(sSpan);
+            } else if (visual === 'hd') {
+              var hSpan = document.createElement('span');
+              hSpan.className = 'tag tag-hd';
+              hSpan.textContent = 'HD';
+              top.appendChild(hSpan);
+            }
+            cell.appendChild(top);
+
+            var mid = document.createElement('div');
+            var stateEl = document.createElement('div');
+            stateEl.className = 'cell-state';
+            stateEl.textContent = visual === 'rest' ? 'Rest' : visual === 'hd' ? 'HD' : visual === 'prestart' ? '—' : 'Day';
+            mid.appendChild(stateEl);
+
+            if (holiday) {
+              var holEl = document.createElement('div');
+              holEl.className = 'holiday-strip';
+              holEl.title = 'Scottish Bank Holiday: ' + holiday;
+              holEl.textContent = '⚑ ' + holiday;
+              mid.appendChild(holEl);
+            }
+            cell.appendChild(mid);
+
+            var staffBar = document.createElement('div');
+            staffBar.className = 'staff-bar';
+            staffBar.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+            staffBar.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+            staffBar.addEventListener('click', (function (targetIso) {
+              return function (e) {
+                e.stopPropagation();
+                selectedDate = targetIso;
+                renderInspector();
+              };
+            })(iso));
+
+            var minus = document.createElement('button');
+            minus.type = 'button';
+            minus.className = 'staff-btn';
+            minus.textContent = '-';
+            minus.addEventListener('click', (function (targetIso, curr) {
+              return function (e) { e.stopPropagation(); setStaffCount(targetIso, curr - 1); };
+            })(iso, count));
+
+            var countSpan = document.createElement('span');
+            countSpan.textContent = count + ' staff';
+
+            var plus = document.createElement('button');
+            plus.type = 'button';
+            plus.className = 'staff-btn';
+            plus.textContent = '+';
+            plus.addEventListener('click', (function (targetIso, curr) {
+              return function (e) { e.stopPropagation(); setStaffCount(targetIso, curr + 1); };
+            })(iso, count));
+
+            staffBar.appendChild(minus);
+            staffBar.appendChild(countSpan);
+            staffBar.appendChild(plus);
+            cell.appendChild(staffBar);
+
+            // Bind Press-and-Hold + Single/Double/Triple Click
+            (function (targetIso, cellEl) {
+              cellEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+              cellEl.addEventListener('pointerdown', function (e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                clearHold(targetIso);
+                holdFired[targetIso] = false;
+                moved[targetIso] = false;
+                startPos[targetIso] = { x: e.clientX, y: e.clientY };
+
+                holdTimers[targetIso] = setTimeout(function () {
+                  delete holdTimers[targetIso];
+                  if (moved[targetIso]) return;
+                  if (tapTimers[targetIso]) { clearTimeout(tapTimers[targetIso]); delete tapTimers[targetIso]; }
+                  delete pendingCommits[targetIso];
+                  tapCounts[targetIso] = 0;
+                  holdFired[targetIso] = true;
+                  var active = nextHoldStatus(getVisualState(targetIso));
+                  setDayStatus(targetIso, active);
+                  holdIntervals[targetIso] = setInterval(function () {
+                    active = nextHoldStatus(active);
+                    setDayStatus(targetIso, active);
+                  }, 550);
+                }, 380);
+              });
+
+              cellEl.addEventListener('pointermove', function (e) {
+                var s = startPos[targetIso];
+                if (!s) return;
+                if (Math.abs(e.clientX - s.x) > 12 || Math.abs(e.clientY - s.y) > 12) {
+                  moved[targetIso] = true;
+                  clearHold(targetIso);
+                }
+              });
+
+              cellEl.addEventListener('pointercancel', function () {
+                clearHold(targetIso);
+                holdFired[targetIso] = false;
+              });
+
+              cellEl.addEventListener('pointerleave', function () {
+                clearHold(targetIso);
+              });
+
+              cellEl.addEventListener('pointerup', function (e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                clearHold(targetIso);
+                if (holdFired[targetIso]) { holdFired[targetIso] = false; return; }
+                if (moved[targetIso]) { moved[targetIso] = false; return; }
+
+                var nextCount = (tapCounts[targetIso] || 0) + 1;
+                tapCounts[targetIso] = nextCount;
+                if (tapTimers[targetIso]) {
+                  clearTimeout(tapTimers[targetIso]);
+                  delete tapTimers[targetIso];
+                }
+                if (nextCount >= 3) {
+                  tapCounts[targetIso] = 0;
+                  delete pendingCommits[targetIso];
+                  setDayStatus(targetIso, 'hd');
+                  return;
+                }
+                var target = nextCount === 2 ? 'work' : 'rest';
+                pendingCommits[targetIso] = target;
+                tapTimers[targetIso] = setTimeout(function () {
+                  delete tapTimers[targetIso];
+                  delete pendingCommits[targetIso];
+                  tapCounts[targetIso] = 0;
+                  setDayStatus(targetIso, target);
+                }, 300);
+              });
+            })(iso, cell);
+
+            td.appendChild(cell);
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+
+        document.getElementById('holidayFooter').textContent = monthHolidays.length
+          ? 'Scottish Bank Holidays: ' + monthHolidays.join(' · ')
+          : 'No Scottish bank holidays in ' + MONTH_NAMES[m - 1] + ' ' + y + '.';
+      }
+
+      function renderInspector() {
+        var box = document.getElementById('dateInspector');
+        if (!selectedDate) {
+          box.classList.remove('open');
+          return;
+        }
+        box.classList.add('open');
+        document.getElementById('inspectorDate').textContent = selectedDate +
+          (selectedDate === WORK_START_DATE ? ' (Work Start Date)' : '');
+        document.getElementById('inspectorHoliday').textContent =
+          SCOTTISH_HOLIDAYS[selectedDate] ? 'Scottish Bank Holiday: ' + SCOTTISH_HOLIDAYS[selectedDate] : '';
+        var count = (state.entries[selectedDate] && state.entries[selectedDate].count) || 0;
+        document.getElementById('inspStaffCount').textContent = count + ' staff';
+      }
+
+      function renderPhoto() {
+        var previewWrap = document.getElementById('photoPreviewWrap');
+        var emptyWrap = document.getElementById('photoEmptyWrap');
+        var img = document.getElementById('photoPreviewImg');
+        if (state.photoDataUrl) {
+          img.src = state.photoDataUrl;
+          previewWrap.style.display = 'block';
+          emptyWrap.style.display = 'none';
+        } else {
+          img.removeAttribute('src');
+          previewWrap.style.display = 'none';
+          emptyWrap.style.display = 'block';
+        }
+      }
+
+      function renderTasks() {
+        var ul = document.getElementById('taskList');
+        ul.innerHTML = '';
+        if (!state.tasks.length) {
+          ul.innerHTML = '<li style="font-size:12px; color:#64748b;">No tasks added yet.</li>';
+          return;
+        }
+        state.tasks.forEach(function (t) {
+          var li = document.createElement('li');
+          li.className = 'task-item' + (t.done ? ' done' : '');
+
+          var left = document.createElement('label');
+          left.style.display = 'flex';
+          left.style.alignItems = 'center';
+          left.style.gap = '8px';
+          left.style.cursor = 'pointer';
+
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = !!t.done;
+          cb.addEventListener('change', function () {
+            t.done = cb.checked;
+            saveStateSync('Saved · Task');
+            renderTasks();
+          });
+
+          var text = document.createElement('span');
+          text.textContent = t.title + (t.date ? ' · ' + t.date : '') + ' · ' + t.priority;
+
+          left.appendChild(cb);
+          left.appendChild(text);
+
+          var del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'btn btn-danger';
+          del.style.minHeight = '28px';
+          del.style.padding = '3px 8px';
+          del.textContent = 'Delete';
+          del.addEventListener('click', function () {
+            state.tasks = state.tasks.filter(function (x) { return x.id !== t.id; });
+            saveStateSync('Saved · Task');
+            renderTasks();
+          });
+
+          li.appendChild(left);
+          li.appendChild(del);
+          ul.appendChild(li);
+        });
+      }
+
+      // Initialize Month & Year dropdowns (2026–2028)
+      var mSel = document.getElementById('monthSelect');
+      MONTH_NAMES.forEach(function (name, idx) {
+        var opt = document.createElement('option');
+        opt.value = String(idx + 1);
+        opt.textContent = name;
+        mSel.appendChild(opt);
+      });
+      var ySel = document.getElementById('yearSelect');
+      for (var yr = MIN_YEAR; yr <= MAX_YEAR; yr++) {
+        var opt = document.createElement('option');
+        opt.value = String(yr);
+        opt.textContent = String(yr);
+        ySel.appendChild(opt);
+      }
+
+      mSel.addEventListener('change', function () {
+        currentYM = clampYM(currentYM.year, Number(mSel.value));
+        renderCalendar();
+      });
+      ySel.addEventListener('change', function () {
+        currentYM = clampYM(Number(ySel.value), currentYM.month);
+        renderCalendar();
+      });
+      document.getElementById('prevBtn').addEventListener('click', function () {
+        var total = currentYM.year * 12 + (currentYM.month - 1) - 1;
+        currentYM = clampYM(Math.floor(total / 12), (total % 12) + 1);
+        renderCalendar();
+      });
+      document.getElementById('nextBtn').addEventListener('click', function () {
+        var total = currentYM.year * 12 + (currentYM.month - 1) + 1;
+        currentYM = clampYM(Math.floor(total / 12), (total % 12) + 1);
+        renderCalendar();
+      });
+      document.getElementById('todayBtn').addEventListener('click', function () {
+        var n = new Date();
+        currentYM = clampYM(n.getFullYear(), n.getMonth() + 1);
+        renderCalendar();
+      });
+      document.getElementById('jumpStartBtn').addEventListener('click', function () {
+        currentYM = { year: 2026, month: 10 };
+        renderCalendar();
+      });
+      document.getElementById('resetMonthBtn').addEventListener('click', function () {
+        var prefix = currentYM.year + '-' + String(currentYM.month).padStart(2, '0');
+        Object.keys(state.entries).forEach(function (k) {
+          if (k.indexOf(prefix) === 0) delete state.entries[k];
+        });
+        saveStateSync('Saved · Reset');
+        renderCalendar();
+        renderInspector();
+      });
+
+      document.querySelectorAll('[data-set-status]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (selectedDate) setDayStatus(selectedDate, btn.getAttribute('data-set-status'));
+        });
+      });
+      document.getElementById('inspMinus').addEventListener('click', function () {
+        if (!selectedDate) return;
+        var curr = (state.entries[selectedDate] && state.entries[selectedDate].count) || 0;
+        setStaffCount(selectedDate, curr - 1);
+      });
+      document.getElementById('inspPlus').addEventListener('click', function () {
+        if (!selectedDate) return;
+        var curr = (state.entries[selectedDate] && state.entries[selectedDate].count) || 0;
+        setStaffCount(selectedDate, curr + 1);
+      });
+      document.getElementById('closeInspector').addEventListener('click', function () {
+        selectedDate = null;
+        renderInspector();
+      });
+
+      // Photo Upload & Remove
+      var photoInput = document.getElementById('photoInput');
+      document.getElementById('uploadPhotoBtn').addEventListener('click', function () { photoInput.click(); });
+      document.getElementById('replacePhotoBtn').addEventListener('click', function () { photoInput.click(); });
+      document.getElementById('removePhotoBtn').addEventListener('click', function () {
+        state.photoDataUrl = null;
+        photoInput.value = '';
+        saveStateSync('Saved · Photo Removed');
+        renderPhoto();
+      });
+      photoInput.addEventListener('change', function () {
+        var file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          state.photoDataUrl = String(reader.result || '');
+          saveStateSync('Saved · Photo');
+          renderPhoto();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Task Form
+      document.getElementById('taskForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var titleInput = document.getElementById('taskTitle');
+        var title = titleInput.value.trim();
+        if (!title) return;
+        state.tasks.unshift({
+          id: 't_' + Date.now(),
+          title: title,
+          date: document.getElementById('taskDate').value,
+          priority: document.getElementById('taskPriority').value,
+          done: false
+        });
+        titleInput.value = '';
+        saveStateSync('Saved · Task');
+        renderTasks();
+      });
+
+      // Always Save Before Exit
+      function flushBeforeExit() {
+        Object.keys(holdTimers).forEach(clearHold);
+        Object.keys(tapTimers).forEach(function (iso) {
+          clearTimeout(tapTimers[iso]);
+          delete tapTimers[iso];
+        });
+        Object.keys(pendingCommits).forEach(function (iso) {
+          var target = pendingCommits[iso];
+          delete pendingCommits[iso];
+          tapCounts[iso] = 0;
+          var prev = state.entries[iso] || { count: 0 };
+          state.entries[iso] = { status: target, count: prev.count || 0 };
+        });
+        saveStateSync();
+      }
+      window.addEventListener('pagehide', flushBeforeExit);
+      window.addEventListener('beforeunload', flushBeforeExit);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') flushBeforeExit();
+      });
+
+      renderCalendar();
+      renderPhoto();
+      renderTasks();
+    })();
   </script>
 </body>
 </html>
